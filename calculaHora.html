@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+	<script type="text/javascript">
+		var app = angular.module('minhaCalculadoraDeHoras', []);
+		app.controller('CalculadoraDeHora', function($scope, $http) {
+			//inicializa hora e dados
+			$scope.hora = {
+				"horasParaTrabalhar":0,
+				"minutosParaTrabalhar":0,
+				"horaDeEntrada":0,
+				"minutosDeEntrada":0,
+				"horaDeSaidaAlmoco":0,
+				"minutosDeSaidaAlmoco":0,
+				"horaDeChegadaAlmoco":0,
+				"minutosDeChegadaAlmoco":0
+			};
+			$scope.hasAlmoco = true;
+			
+			//Função Calcula hora
+			$scope.CalcularHora = function(){
+				angular.element('.display-none').removeClass('display-none');
+				// Recupera valores de Horas da view
+				var horasTrabalhadas = angular.element("#horasParaTrabalhar").val();
+				var horasEntrada = angular.element("#horaDeEntrada").val();
+				var horasSaidaAlmoco = angular.element("#horaDeSaidaAlmoco").val();
+				var horasChegadaAlmoco = angular.element("#horaDeChegadaAlmoco").val();
+				
+				//Separadores das horas
+				var indexHT = horasTrabalhadas.indexOf(":");
+				var indexHE = horasEntrada.indexOf(":");
+				var indexHSA = horasSaidaAlmoco.indexOf(":");
+				var indexHCA = horasChegadaAlmoco.indexOf(":");
+				
+				//transforma horas recuperas da view em int
+				$scope.hora.minutosParaTrabalhar = parseInt(horasTrabalhadas.slice(indexHT +1));
+				$scope.hora.minutosDeEntrada = parseInt(horasEntrada.slice(indexHE +1));
+				$scope.hora.minutosDeSaidaAlmoco = parseInt(horasSaidaAlmoco.slice(indexHSA +1));
+				$scope.hora.minutosDeChegadaAlmoco = parseInt(horasChegadaAlmoco.slice(indexHCA +1));
+				$scope.hora.horasParaTrabalhar = parseInt(horasTrabalhadas.slice(0,indexHT));
+				$scope.hora.horaDeEntrada = parseInt(horasEntrada.slice(0,indexHE));
+				$scope.hora.horaDeSaidaAlmoco = parseInt(horasSaidaAlmoco.slice(0,indexHSA));
+				$scope.hora.horaDeChegadaAlmoco = parseInt(horasChegadaAlmoco.slice(0,indexHCA));
+				console.log($scope.hora);
+				
+				//Calcula Almoço
+				$scope.hora.horaIntervaloAlmoco = 0;
+				$scope.hora.minutosIntervaloAlmoco = 0;
+				if( $scope.hasAlmoco == true){
+					$scope.hora.horaIntervaloAlmoco = $scope.hora.horaDeChegadaAlmoco - $scope.hora.horaDeSaidaAlmoco;
+					$scope.hora.minutosIntervaloAlmoco = $scope.hora.minutosDeChegadaAlmoco - $scope.hora.minutosDeSaidaAlmoco;
+					if( $scope.hora.minutosIntervaloAlmoco >= 60){
+						var dividendo = parseInt($scope.hora.minutosIntervaloAlmoco / 60); 
+						var resto = $scope.hora.minutosIntervaloAlmoco % 60;
+						$scope.hora.horaIntervaloAlmoco += dividendo;
+						$scope.hora.minutosIntervaloAlmoco = resto;
+					}
+					$scope.hora.horaTrabalhadaParteOne = $scope.hora.horaDeSaidaAlmoco - $scope.hora.horaDeEntrada;
+					$scope.hora.minutosTrabalhadosParteOne = $scope.hora.minutosDeSaidaAlmoco - $scope.hora.minutosDeEntrada;
+					
+					$scope.hora.horasParaTrabalhar -= $scope.hora.horaTrabalhadaParteOne;
+					$scope.hora.minutosParaTrabalhar -= $scope.hora.minutosTrabalhadosParteOne;
+					$scope.hora.horaDeEntrada = $scope.hora.horaDeChegadaAlmoco;
+					$scope.hora.minutosDeEntrada = $scope.hora.minutosDeChegadaAlmoco;
+				}
+				
+				
+				$scope.hora.horaPrevistaDeSaida = $scope.hora.horaDeEntrada + $scope.hora.horasParaTrabalhar;
+				$scope.hora.minutoPrevistoDeSaida = $scope.hora.minutosDeEntrada + $scope.hora.minutosParaTrabalhar;
+				
+				if( $scope.hora.minutoPrevistoDeSaida >= 60){
+					var dividendo = parseInt($scope.hora.minutoPrevistoDeSaida / 60); 
+					var resto = $scope.hora.minutoPrevistoDeSaida % 60;
+					$scope.hora.horaPrevistaDeSaida += dividendo;
+					$scope.hora.minutoPrevistoDeSaida = resto;
+				}
+				$scope.hora.horaPrevistaDeSaida = $scope.hora.horaPrevistaDeSaida < 10 ? "0"+$scope.hora.horaPrevistaDeSaida : $scope.hora.horaPrevistaDeSaida; 
+				$scope.hora.minutoPrevistoDeSaida = $scope.hora.minutoPrevistoDeSaida < 10 ? "0"+$scope.hora.minutoPrevistoDeSaida : $scope.hora.minutoPrevistoDeSaida;
+				$scope.tempoPrevistoDeSaida = $scope.hora.horaPrevistaDeSaida +":"+$scope.hora.minutoPrevistoDeSaida;
+				console.log($scope.tempoPrevistoDeSaida);
+			}
+			
+		});
+	</script>
+	<style>
+	.container{
+		background-color: white;
+		margin-top:-17px;
+	}
+	.container-box{
+		display: block;
+		width: 400px;
+		margin: auto;
+		margin-top:100px;
+		text-align: center;
+		border: 1px solid lightgrey;
+		border-radius: 5px;
+		padding: 5px 0px;
+		background-color: lightseagreen;
+	}
+	.div-box-header{
+		border:0;
+		border-bottom: 1px solid lightgray;
+		margin-bottom: 5px;
+	}
+	.div-box-footer{
+		border:0;
+		border-top: 1px solid lightgray;
+		margin-top: 5px;
+	}
+	.div-box-hora-entrada{
+		margin-top: 10px;
+	}
+	.div-box-button{
+		background-color: lightseagreen;
+	}
+	.input-box{
+		display: block;
+		width: 50%;
+		text-align: center;
+		font-size: 15px;
+		border: 0px;
+		padding: 10px;
+		margin: auto;
+		border-radius: 10px;
+		box-shadow: 0px 0px 6px seagreen;
+	}
+	.button-box{
+		display: block;
+		width: 50%;
+		margin: auto;
+		padding: 10px 0px;
+		font-size: 15px;
+		font-weight: bold;
+		background-color: lightseagreen;
+		border-radius: 10px;
+		color: white;
+		border: 0px;
+		cursor: pointer;
+	}
+	.h1-box{
+		width: 30%;
+		border-radius: 10px;
+		color: white;
+		box-shadow: 0px 0px 3px darkgrey;
+		padding: 5px;
+		background-color: darkseagreen;
+		margin: auto;
+	}
+	h3{
+		color: seagreen;
+	}
+	.display-none{
+		display: none;
+	}
+	</style>
+	<meta charset="utf-8"/>
+</head>
+<body ng-app="minhaCalculadoraDeHoras" ng-controller="CalculadoraDeHora">
+	<div class="container-box">
+		<div class="container">
+			<div class="div-box-header" style="">
+				<h3 style="padding: 12px 0px 0px;">Calculadora de Hora de Saída</h3>
+			</div>
+			<div class="div-box-hora-entrada">
+				<input id="horasParaTrabalhar" class="input-box" type="text" placeholder="Horas a trabalhar" ng-model="horasParaTrabalharAux"/><br>
+				<input id="horaDeEntrada" class="input-box" type="text" placeholder="Hora de Entrada" ng-model="horaDeEntradaAux"/><br>
+			</div>
+			<div class="div-box">
+				<input id="horaDeSaidaAlmoco" class="input-box" type="text" placeholder="Hora de Saída p/ Almoço" ng-model="horaDeSaidaAlmocoAux"/><br>
+				<input id="horaDeChegadaAlmoco" class="input-box" type="text" placeholder="Hora de Chegada do Almoço" ng-model="horaDeChegadaAlmocoAux"/><br>
+			</div>
+			<div class="div-box-button">
+				<button id="CalcularHora" class="button-box" ng-click="CalcularHora()">Calcular</button>
+			</div>
+			<div class="div-box-footer" style="padding: 0px 0px 10px">
+				<h3 class=" display-none" style="margin-top: 10px;">Hora de Saída Prevista:</h3>
+				<h1 id="HoraDeSaidaPrevista" class="h1-box display-none">{{tempoPrevistoDeSaida}}</h1>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
