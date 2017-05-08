@@ -30,35 +30,35 @@
 				var horasEntrada = angular.element("#horaDeEntrada").val();
 				if(horasTrabalhadas == "" || horasEntrada == ""){
 					if(horasTrabalhadas == ""){
-						$scope.marcaInvalido('#horasParaTrabalhar',"Informe as horas necessárias");
+						$scope.marcaInvalido('#horasParaTrabalhar',"Informe as horas necessarias");
 					}else{
 						angular.element('#horasParaTrabalhar').removeClass('invalid');
 					}
 					if(horasEntrada == ""){
-						$scope.marcaInvalido('#horaDeEntrada',"Informe as horas necessárias");
+						$scope.marcaInvalido('#horaDeEntrada',"Informe as horas necessarias");
 					}else{
 						angular.element('#horaDeEntrada').removeClass('invalid');
 					}
 				}else if(!horasTrabalhadas.includes(":") || !horasEntrada.includes(":")){
 					if(!horasTrabalhadas.includes(":")){
-						$scope.marcaInvalido('#horasParaTrabalhar',"É preciso informar o separador ' : '");
+						$scope.marcaInvalido('#horasParaTrabalhar',"Precisa informar o separador ' : '");
 					}else{
 						angular.element('#horasParaTrabalhar').removeClass('invalid');
 					}
 					if(!horasEntrada.includes(":")){
-						$scope.marcaInvalido('#horaDeEntrada',"É preciso informar o separador ' : '");
+						$scope.marcaInvalido('#horaDeEntrada',"Precisa informar o separador ' : '");
 					}else{
 						angular.element('#horaDeEntrada').removeClass('invalid');
 					}
 				}else{
 					$scope.lerCampos();
 					if($scope.validaInputHorasParaTrabalhar()){
-						$scope.marcaInvalido('#horasParaTrabalhar','Informe horas válidas | Formato: HH:MM');
+						$scope.marcaInvalido('#horasParaTrabalhar','Informe horas validas | Formato: HH:MM');
 					}else{
 						angular.element('#horasParaTrabalhar').removeClass('invalid');
 					}
 					if($scope.validaInputHoraDeEntrada()){
-						$scope.marcaInvalido('#horaDeEntrada','Informe horas válidas | Formato: HH:MM');
+						$scope.marcaInvalido('#horaDeEntrada','Informe horas validas | Formato: HH:MM');
 					}else{
 						angular.element('#horaDeEntrada').removeClass('invalid');
 					}
@@ -251,30 +251,30 @@
 		box-shadow: 0px 0px 6px red;
 	}
 	</style>
-	
+	<meta charset="utf-8"/>
 </head>
 <body ng-app="minhaCalculadoraDeHoras" ng-controller="CalculadoraDeHora">
 	<div class="container-box">
 		<div class="container">
 			<div class="div-box-header" style="">
-				<h3 style="padding: 12px 0px 0px;">Calculadora de Hora de Saída</h3>
+				<h3 style="padding: 12px 0px 0px;">Calculadora de Hora de Saida</h3>
 			</div>
 			<div class="error">
-				<span>Informe as horas necessárias</span>
+				<span>Informe as horas necessarias</span>
 			</div>
 			<div class="div-box-hora-entrada">
 				<input id="horasParaTrabalhar" class="input-box required" type="text" placeholder="Horas a trabalhar" ng-model="horasParaTrabalharAux"/><br>
 				<input id="horaDeEntrada" class="input-box required" type="text" placeholder="Hora de Entrada" ng-model="horaDeEntradaAux"/><br>
 			</div>
 			<div class="div-box">
-				<input id="horaDeSaidaAlmoco" class="input-box" type="text" placeholder="Hora de Saída p/ Almoço" ng-model="horaDeSaidaAlmocoAux"/><br>
-				<input id="horaDeChegadaAlmoco" class="input-box" type="text" placeholder="Hora de Chegada do Almoço" ng-model="horaDeChegadaAlmocoAux"/><br>
+				<input id="horaDeSaidaAlmoco" class="input-box" type="text" placeholder="Hora de Saida p/ Almoco" ng-model="horaDeSaidaAlmocoAux"/><br>
+				<input id="horaDeChegadaAlmoco" class="input-box" type="text" placeholder="Hora de Chegada do Almoco" ng-model="horaDeChegadaAlmocoAux"/><br>
 			</div>
 			<div class="div-box-button">
 				<button id="CalcularHora" class="button-box" ng-click="CalcularHora()">Calcular</button>
 			</div>
 			<div class="div-box-footer" style="padding: 0px 0px 10px">
-				<h3 class=" display-none" style="margin-top: 10px;">Hora de Saída Prevista:</h3>
+				<h3 class=" display-none" style="margin-top: 10px;">Hora de Saida Prevista:</h3>
 				<h1 id="HoraDeSaidaPrevista" class="h1-box display-none">{{tempoPrevistoDeSaida}}</h1>
 			</div>
 		</div>
