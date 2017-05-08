@@ -19,26 +19,88 @@
 			};
 			$scope.hasAlmoco = true;
 			angular.element('.error').hide();
-			angular.element('.required').hover(function(){
+			
+			angular.element('.div-box-button').mouseenter(function(){
+				$scope.verificaCamposEntradaHorasTrabalhadas();
+			});
+			
+			//função que valida os campos do formulário
+			$scope.verificaCamposEntradaHorasTrabalhadas = function(){
 				var horasTrabalhadas = angular.element("#horasParaTrabalhar").val();
 				var horasEntrada = angular.element("#horaDeEntrada").val();
 				if(horasTrabalhadas == "" || horasEntrada == ""){
-					angular.element('#CalcularHora').attr('disabled',true);
-					angular.element('.error span').text("Informe as horas necessÃ¡rias");
-					angular.element('.error').slideDown(1000);
+					if(horasTrabalhadas == ""){
+						$scope.marcaInvalido('#horasParaTrabalhar',"Informe as horas necessárias");
+					}else{
+						angular.element('#horasParaTrabalhar').removeClass('invalid');
+					}
+					if(horasEntrada == ""){
+						$scope.marcaInvalido('#horaDeEntrada',"Informe as horas necessárias");
+					}else{
+						angular.element('#horaDeEntrada').removeClass('invalid');
+					}
 				}else if(!horasTrabalhadas.includes(":") || !horasEntrada.includes(":")){
-					angular.element('#CalcularHora').attr('disabled',true);
-					angular.element('.error span').text("Ã‰ preciso informar o separador ' : '");
-					angular.element('.error').slideDown(1000);
+					if(!horasTrabalhadas.includes(":")){
+						$scope.marcaInvalido('#horasParaTrabalhar',"É preciso informar o separador ' : '");
+					}else{
+						angular.element('#horasParaTrabalhar').removeClass('invalid');
+					}
+					if(!horasEntrada.includes(":")){
+						$scope.marcaInvalido('#horaDeEntrada',"É preciso informar o separador ' : '");
+					}else{
+						angular.element('#horaDeEntrada').removeClass('invalid');
+					}
 				}else{
-					angular.element('#CalcularHora').attr('disabled',false);
-					angular.element('.error').slideUp(1000);
+					$scope.lerCampos();
+					if($scope.validaInputHorasParaTrabalhar()){
+						$scope.marcaInvalido('#horasParaTrabalhar','Informe horas válidas | Formato: HH:MM');
+					}else{
+						angular.element('#horasParaTrabalhar').removeClass('invalid');
+					}
+					if($scope.validaInputHoraDeEntrada()){
+						$scope.marcaInvalido('#horaDeEntrada','Informe horas válidas | Formato: HH:MM');
+					}else{
+						angular.element('#horaDeEntrada').removeClass('invalid');
+					}
+					if(!$scope.validaInputHorasParaTrabalhar() && !$scope.validaInputHoraDeEntrada()){
+						$scope.marcaValido();
+					}
 				}
-			});
+			}
 			
-			//FunÃ§Ã£o Calcula hora
-			$scope.CalcularHora = function(){
-				angular.element('.display-none').removeClass('display-none');
+			$scope.marcaValido = function(){
+				angular.element('#CalcularHora').attr('disabled',false);
+				angular.element('.error').slideUp(1000);
+				angular.element(':text').removeClass('invalid');
+			}
+			
+			$scope.marcaInvalido = function(field, message){
+				angular.element(field).addClass('invalid');
+				angular.element('#CalcularHora').attr('disabled',true);
+				angular.element('.error span').text(message);
+				angular.element('.error').slideDown(1000);
+			}
+			
+			$scope.validaInputHorasParaTrabalhar = function(){
+				if($scope.hora.minutosParaTrabalhar > 60 || $scope.hora.minutosParaTrabalhar < 0 || $scope.hora.horasParaTrabalhar < 0
+						|| ($scope.hora.horasParaTrabalhar >= 24 && $scope.hora.minutosParaTrabalhar > 0)
+						|| (isNaN($scope.hora.horasParaTrabalhar) || isNaN($scope.hora.minutosParaTrabalhar))){
+					return true;
+				}
+				return false;
+			}
+			
+			$scope.validaInputHoraDeEntrada = function(){
+				if($scope.hora.minutosDeEntrada > 60 || $scope.hora.minutosDeEntrada < 0 || $scope.hora.horaDeEntrada < 0
+						|| ($scope.hora.horaDeEntrada >= 24 && $scope.hora.minutosDeEntrada > 0)
+						|| (isNaN($scope.hora.horaDeEntrada) || isNaN($scope.hora.minutosDeEntrada))){
+					return true;
+				}
+				return false;
+			}
+			
+			//função que ler os campos do formulário
+			$scope.lerCampos = function(){
 				// Recupera valores de Horas da view
 				var horasTrabalhadas = angular.element("#horasParaTrabalhar").val();
 				var horasEntrada = angular.element("#horaDeEntrada").val();
@@ -60,9 +122,14 @@
 				$scope.hora.horaDeEntrada = parseInt(horasEntrada.slice(0,indexHE));
 				$scope.hora.horaDeSaidaAlmoco = parseInt(horasSaidaAlmoco.slice(0,indexHSA));
 				$scope.hora.horaDeChegadaAlmoco = parseInt(horasChegadaAlmoco.slice(0,indexHCA));
-				console.log($scope.hora);
+			}
+			
+			//Função Calcula hora
+			$scope.CalcularHora = function(){
+				angular.element('.display-none').removeClass('display-none');
 				
-				//Calcula AlmoÃ§o
+				
+				//Calcula Almoço
 				$scope.hora.horaIntervaloAlmoco = 0;
 				$scope.hora.minutosIntervaloAlmoco = 0;
 				if( $scope.hasAlmoco == true){
@@ -96,7 +163,6 @@
 				$scope.hora.horaPrevistaDeSaida = $scope.hora.horaPrevistaDeSaida < 10 ? "0"+$scope.hora.horaPrevistaDeSaida : $scope.hora.horaPrevistaDeSaida; 
 				$scope.hora.minutoPrevistoDeSaida = $scope.hora.minutoPrevistoDeSaida < 10 ? "0"+$scope.hora.minutoPrevistoDeSaida : $scope.hora.minutoPrevistoDeSaida;
 				$scope.tempoPrevistoDeSaida = $scope.hora.horaPrevistaDeSaida +":"+$scope.hora.minutoPrevistoDeSaida;
-				console.log($scope.tempoPrevistoDeSaida);
 			}
 			
 		});
@@ -146,7 +212,7 @@
 	}
 	.button-box{
 		display: block;
-		width: 50%;
+		width: 15%;
 		margin: auto;
 		padding: 10px 0px;
 		font-size: 15px;
@@ -181,6 +247,9 @@
 		box-sizing:border-box;
 		font-size:18px;
 	}
+	.invalid{
+		box-shadow: 0px 0px 6px red;
+	}
 	</style>
 	<meta charset="utf-8"/>
 </head>
@@ -188,24 +257,24 @@
 	<div class="container-box">
 		<div class="container">
 			<div class="div-box-header" style="">
-				<h3 style="padding: 12px 0px 0px;">Calculadora de Hora de SaÃ­da</h3>
+				<h3 style="padding: 12px 0px 0px;">Calculadora de Hora de Saída</h3>
 			</div>
 			<div class="error">
-				<span>Informe as horas necessÃ¡rias</span>
+				<span>Informe as horas necessárias</span>
 			</div>
 			<div class="div-box-hora-entrada">
 				<input id="horasParaTrabalhar" class="input-box required" type="text" placeholder="Horas a trabalhar" ng-model="horasParaTrabalharAux"/><br>
 				<input id="horaDeEntrada" class="input-box required" type="text" placeholder="Hora de Entrada" ng-model="horaDeEntradaAux"/><br>
 			</div>
 			<div class="div-box">
-				<input id="horaDeSaidaAlmoco" class="input-box" type="text" placeholder="Hora de SaÃ­da p/ AlmoÃ§o" ng-model="horaDeSaidaAlmocoAux"/><br>
-				<input id="horaDeChegadaAlmoco" class="input-box" type="text" placeholder="Hora de Chegada do AlmoÃ§o" ng-model="horaDeChegadaAlmocoAux"/><br>
+				<input id="horaDeSaidaAlmoco" class="input-box" type="text" placeholder="Hora de Saída p/ Almoço" ng-model="horaDeSaidaAlmocoAux"/><br>
+				<input id="horaDeChegadaAlmoco" class="input-box" type="text" placeholder="Hora de Chegada do Almoço" ng-model="horaDeChegadaAlmocoAux"/><br>
 			</div>
 			<div class="div-box-button">
 				<button id="CalcularHora" class="button-box" ng-click="CalcularHora()">Calcular</button>
 			</div>
 			<div class="div-box-footer" style="padding: 0px 0px 10px">
-				<h3 class=" display-none" style="margin-top: 10px;">Hora de SaÃ­da Prevista:</h3>
+				<h3 class=" display-none" style="margin-top: 10px;">Hora de Saída Prevista:</h3>
 				<h1 id="HoraDeSaidaPrevista" class="h1-box display-none">{{tempoPrevistoDeSaida}}</h1>
 			</div>
 		</div>
