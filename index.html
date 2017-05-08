@@ -18,6 +18,18 @@
 				"minutosDeChegadaAlmoco":0
 			};
 			$scope.hasAlmoco = true;
+			angular.element('.error').hide();
+			angular.element('.required').hover(function(){
+				var horasTrabalhadas = angular.element("#horasParaTrabalhar").val();
+				var horasEntrada = angular.element("#horaDeEntrada").val();
+				if(horasTrabalhadas == "" || horasEntrada == ""){
+					angular.element('#CalcularHora').attr('disabled',true);
+					angular.element('.error').slideDown(1000);
+				}else{
+					angular.element('#CalcularHora').attr('disabled',false);
+					angular.element('.error').slideUp(1000);
+				}
+			});
 			
 			//Função Calcula hora
 			$scope.CalcularHora = function(){
@@ -25,8 +37,8 @@
 				// Recupera valores de Horas da view
 				var horasTrabalhadas = angular.element("#horasParaTrabalhar").val();
 				var horasEntrada = angular.element("#horaDeEntrada").val();
-				var horasSaidaAlmoco = angular.element("#horaDeSaidaAlmoco").val();
-				var horasChegadaAlmoco = angular.element("#horaDeChegadaAlmoco").val();
+				var horasSaidaAlmoco = angular.element("#horaDeSaidaAlmoco").val() != ""? angular.element("#horaDeSaidaAlmoco").val() : "0:00";
+				var horasChegadaAlmoco = angular.element("#horaDeChegadaAlmoco").val() != ""? angular.element("#horaDeChegadaAlmoco").val() : "0:00";
 				
 				//Separadores das horas
 				var indexHT = horasTrabalhadas.indexOf(":");
@@ -155,6 +167,15 @@
 	.display-none{
 		display: none;
 	}
+	.error{
+		background-color:red;
+		height:40px;
+		color:white;
+		margin-top:-2px;
+		padding-top:10px;
+		box-sizing:border-box;
+		font-size:18px;
+	}
 	</style>
 	<meta charset="utf-8"/>
 </head>
@@ -164,9 +185,12 @@
 			<div class="div-box-header" style="">
 				<h3 style="padding: 12px 0px 0px;">Calculadora de Hora de Saída</h3>
 			</div>
+			<div class="error">
+				<span>Informe as horas necessárias</span>
+			</div>
 			<div class="div-box-hora-entrada">
-				<input id="horasParaTrabalhar" class="input-box" type="text" placeholder="Horas a trabalhar" ng-model="horasParaTrabalharAux"/><br>
-				<input id="horaDeEntrada" class="input-box" type="text" placeholder="Hora de Entrada" ng-model="horaDeEntradaAux"/><br>
+				<input id="horasParaTrabalhar" class="input-box required" type="text" placeholder="Horas a trabalhar" ng-model="horasParaTrabalharAux"/><br>
+				<input id="horaDeEntrada" class="input-box required" type="text" placeholder="Hora de Entrada" ng-model="horaDeEntradaAux"/><br>
 			</div>
 			<div class="div-box">
 				<input id="horaDeSaidaAlmoco" class="input-box" type="text" placeholder="Hora de Saída p/ Almoço" ng-model="horaDeSaidaAlmocoAux"/><br>
