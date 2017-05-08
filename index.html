@@ -24,6 +24,11 @@
 				var horasEntrada = angular.element("#horaDeEntrada").val();
 				if(horasTrabalhadas == "" || horasEntrada == ""){
 					angular.element('#CalcularHora').attr('disabled',true);
+					angular.element('.error span').text("Informe as horas necessárias");
+					angular.element('.error').slideDown(1000);
+				}else if(!horasTrabalhadas.includes(":") || !horasEntrada.includes(":")){
+					angular.element('#CalcularHora').attr('disabled',true);
+					angular.element('.error span').text("É preciso informar o separador ' : '");
 					angular.element('.error').slideDown(1000);
 				}else{
 					angular.element('#CalcularHora').attr('disabled',false);
