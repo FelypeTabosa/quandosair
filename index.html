@@ -42,10 +42,12 @@
 			angular.element('#almoco').click(function(){
 				angular.element('.div-box').show();
 				angular.element('#almoco').css('opacity','0.5');
+				$scope.hasAlmoco = true;
 			});
 			angular.element('.remove').click(function(){
 				angular.element('.div-box').hide();
 				angular.element('#almoco').css('opacity','1');
+				$scope.hasAlmoco = false;
 			});
 			
 			angular.element('#lanche').bind('click',function(){
@@ -62,7 +64,7 @@
 				});
 			};
 			
-			//funÁ„o que valida os campos do formul·rio
+			//fun√ß√£o que valida os campos do formul√°rio
 			$scope.verificaCamposEntradaHorasTrabalhadas = function(){
 				var horasTrabalhadas = angular.element("#horasParaTrabalhar").val();
 				var horasEntrada = angular.element("#horaDeEntrada").val();
@@ -139,7 +141,7 @@
 				return false;
 			}
 			
-			//funÁ„o que ler os campos do formul·rio
+			//fun√ß√£o que ler os campos do formul√°rio
 			$scope.lerCampos = function(){
 				// Recupera valores de Horas da view
 				var horasTrabalhadas = angular.element("#horasParaTrabalhar").val();
@@ -191,7 +193,7 @@
 				$scope.tempoPrevistoDeSaida = $scope.hora.horaPrevistaDeSaida +":"+$scope.hora.minutoPrevistoDeSaida;
 			}
 			
-			//FunÁ„o Calcula hora
+			//Fun√ß√£o Calcula hora
 			$scope.calcularHora = function(){
 				angular.element('.resultado').slideDown();
 				if( $scope.hasAlmoco == true){
