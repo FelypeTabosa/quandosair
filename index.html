@@ -17,12 +17,50 @@
 				"horaDeChegadaAlmoco":0,
 				"minutosDeChegadaAlmoco":0
 			};
-			$scope.hasAlmoco = true;
+			$scope.hasAlmoco = false;
 			angular.element('.error').hide();
+			angular.element('.menu').hide();
+			angular.element('.div-box').hide();
+			angular.element('.resultado').hide();
 			
 			angular.element('.div-box-button').mouseenter(function(){
 				$scope.verificaCamposEntradaHorasTrabalhadas();
 			});
+			angular.element('.options').hover(function(){
+				angular.element('.menu').show();
+				angular.element('.menu').mouseleave(function(){
+					angular.element('.menu').fadeOut();
+				});
+			});
+			angular.element('.options').hover(function(){
+				angular.element('.menu').show();
+				angular.element('.menu').mouseleave(function(){
+					angular.element('.menu').fadeOut();
+				});
+			});
+				
+			angular.element('#almoco').click(function(){
+				angular.element('.div-box').show();
+				angular.element('#almoco').css('opacity','0.5');
+			});
+			angular.element('.remove').click(function(){
+				angular.element('.div-box').hide();
+				angular.element('#almoco').css('opacity','1');
+			});
+			
+			angular.element('#lanche').bind('click',function(){
+				angular.element('.div-box').after(angular.element('.div-box').html());
+				angular.element('#lanche').unbind('click');
+			});
+			angular.element('.remove').bind('click',function(){
+				$scope.adicionaFuncaoAdicionaLanche();
+			});
+			$scope.adicionaFuncaoAdicionaLanche = function(){
+				angular.element('#lanche').bind('click',function(){
+					angular.element('.div-box').after(angular.element('.div-box').html());
+					angular.element('#lanche').unbind('click');
+				});
+			};
 			
 			//função que valida os campos do formulário
 			$scope.verificaCamposEntradaHorasTrabalhadas = function(){
@@ -72,9 +110,11 @@
 				angular.element('#CalcularHora').attr('disabled',false);
 				angular.element('.error').slideUp(1000);
 				angular.element(':text').removeClass('invalid');
+				angular.element(':text').addClass('valid');
 			}
 			
 			$scope.marcaInvalido = function(field, message){
+				angular.element(':text').removeClass('valid');
 				angular.element(field).addClass('invalid');
 				angular.element('#CalcularHora').attr('disabled',true);
 				angular.element('.error span').text(message);
@@ -124,36 +164,22 @@
 				$scope.hora.horaDeChegadaAlmoco = parseInt(horasChegadaAlmoco.slice(0,indexHCA));
 			}
 			
-			//Função Calcula hora
-			$scope.CalcularHora = function(){
-				angular.element('.display-none').removeClass('display-none');
+			$scope.calculaAlmoco = function(){
+				$scope.hora.horaTrabalhadaParteOne = $scope.hora.horaDeSaidaAlmoco - $scope.hora.horaDeEntrada;
+				$scope.hora.minutosTrabalhadosParteOne = $scope.hora.minutosDeSaidaAlmoco - $scope.hora.minutosDeEntrada;
 				
-				
-				//Calcula Almoço
-				$scope.hora.horaIntervaloAlmoco = 0;
-				$scope.hora.minutosIntervaloAlmoco = 0;
-				if( $scope.hasAlmoco == true){
-					$scope.hora.horaIntervaloAlmoco = $scope.hora.horaDeChegadaAlmoco - $scope.hora.horaDeSaidaAlmoco;
-					$scope.hora.minutosIntervaloAlmoco = $scope.hora.minutosDeChegadaAlmoco - $scope.hora.minutosDeSaidaAlmoco;
-					if( $scope.hora.minutosIntervaloAlmoco >= 60){
-						var dividendo = parseInt($scope.hora.minutosIntervaloAlmoco / 60); 
-						var resto = $scope.hora.minutosIntervaloAlmoco % 60;
-						$scope.hora.horaIntervaloAlmoco += dividendo;
-						$scope.hora.minutosIntervaloAlmoco = resto;
-					}
-					$scope.hora.horaTrabalhadaParteOne = $scope.hora.horaDeSaidaAlmoco - $scope.hora.horaDeEntrada;
-					$scope.hora.minutosTrabalhadosParteOne = $scope.hora.minutosDeSaidaAlmoco - $scope.hora.minutosDeEntrada;
-					
-					$scope.hora.horasParaTrabalhar -= $scope.hora.horaTrabalhadaParteOne;
-					$scope.hora.minutosParaTrabalhar -= $scope.hora.minutosTrabalhadosParteOne;
-					$scope.hora.horaDeEntrada = $scope.hora.horaDeChegadaAlmoco;
-					$scope.hora.minutosDeEntrada = $scope.hora.minutosDeChegadaAlmoco;
-				}
-				
-				
+				$scope.hora.horasParaTrabalhar -= $scope.hora.horaTrabalhadaParteOne;
+				$scope.hora.minutosParaTrabalhar -= $scope.hora.minutosTrabalhadosParteOne;
+				$scope.hora.horaDeEntrada = $scope.hora.horaDeChegadaAlmoco;
+				$scope.hora.minutosDeEntrada = $scope.hora.minutosDeChegadaAlmoco;
+			}
+			
+			$scope.calculaSaidaPrevista = function(){
 				$scope.hora.horaPrevistaDeSaida = $scope.hora.horaDeEntrada + $scope.hora.horasParaTrabalhar;
 				$scope.hora.minutoPrevistoDeSaida = $scope.hora.minutosDeEntrada + $scope.hora.minutosParaTrabalhar;
-				
+			}
+			
+			$scope.formataSaidaPrevista = function(){
 				if( $scope.hora.minutoPrevistoDeSaida >= 60){
 					var dividendo = parseInt($scope.hora.minutoPrevistoDeSaida / 60); 
 					var resto = $scope.hora.minutoPrevistoDeSaida % 60;
@@ -165,19 +191,27 @@
 				$scope.tempoPrevistoDeSaida = $scope.hora.horaPrevistaDeSaida +":"+$scope.hora.minutoPrevistoDeSaida;
 			}
 			
+			//Função Calcula hora
+			$scope.calcularHora = function(){
+				angular.element('.resultado').slideDown();
+				if( $scope.hasAlmoco == true){
+					$scope.calculaAlmoco();
+				}
+				$scope.calculaSaidaPrevista();
+				$scope.formataSaidaPrevista();
+			}
+			
 		});
 	</script>
 	<style>
 	.container{
 		background-color: white;
-		margin-top:-17px;
 	}
 	.container-box{
 		display: block;
 		width: 400px;
 		margin: auto;
 		margin-top:100px;
-		text-align: center;
 		border: 1px solid lightgrey;
 		border-radius: 5px;
 		padding: 5px 0px;
@@ -188,16 +222,64 @@
 		border-bottom: 1px solid lightgray;
 		margin-bottom: 5px;
 	}
+	.div-box-header span{
+		display: inline-block;
+	}
+	.div-box-header span.options{
+		float: right;
+		margin-right: 12px;
+		margin-top: 12px;
+		height: 35px;
+		width: 35px;
+		background: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqg2zc6VJoBUtBItdjGtpmpR-6H9IoiHBD3v620Oanog9AYOUV);
+		background-clip: content-box;
+		background-size: 20px;
+		background-repeat: no-repeat;
+		background-position: center;
+		box-shadow: 0px 0px 0.5px grey inset;
+		padding: 2px;
+		cursor:pointer;
+	}
+	.div-box-header span.options:hover{
+		outline: 1px solid lightgray; 
+	}
+	span.remove{
+		float: left;
+		margin-left: 32px;
+		margin-top: -82px;
+		height: 35px;
+		width: 35px;
+		background: url(https://cdn4.iconfinder.com/data/icons/icocentre-free-icons/114/f-cross_256-128.png);
+		background-clip: content-box;
+		background-size: 20px;
+		background-repeat: no-repeat;
+		background-position: center;
+		box-shadow: 0px 0px 0.5px grey inset;
+		padding: 2px;
+		cursor: pointer;
+	}
+	span.remove:hover{
+		outline: 1px solid lightgray; 
+	}
+	.div-box-header span.titulo{
+		margin-left: 60px;
+		color:lightseagreen;
+		font-size: 20px;
+		font-weight: bold;
+		padding: 20px 10px
+	}
 	.div-box-footer{
 		border:0;
 		border-top: 1px solid lightgray;
 		margin-top: 5px;
+		text-align: center;
 	}
 	.div-box-hora-entrada{
 		margin-top: 10px;
 	}
 	.div-box-button{
 		background-color: lightseagreen;
+		padding: 10px;
 	}
 	.input-box{
 		display: block;
@@ -208,13 +290,15 @@
 		padding: 10px;
 		margin: auto;
 		border-radius: 10px;
-		box-shadow: 0px 0px 6px seagreen;
+		box-shadow: 0px 0px 6px #BBB;
+		color:lightseagreen;
+		font-size:15px;
 	}
 	.button-box{
 		display: block;
-		width: 15%;
+		width: 100%;
 		margin: auto;
-		padding: 10px 0px;
+		/*padding: 10px 0px;*/
 		font-size: 15px;
 		font-weight: bold;
 		background-color: lightseagreen;
@@ -222,6 +306,9 @@
 		color: white;
 		border: 0px;
 		cursor: pointer;
+	}
+	.input-box:focus{
+		outline: 0px;
 	}
 	.h1-box{
 		width: 30%;
@@ -246,9 +333,40 @@
 		padding-top:10px;
 		box-sizing:border-box;
 		font-size:18px;
+		text-align: center;
 	}
 	.invalid{
 		box-shadow: 0px 0px 6px red;
+	}
+	.valid{
+		box-shadow: 0px 0px 6px seagreen;
+	}
+	body{
+		background-color:rgba(192,192,192,0.1);
+	}
+	.menu{
+		z-index: 100;
+		outline: 1px solid lightgray;
+		box-shadow: 0px 0px 0.5px grey inset;
+		float: right;
+		margin-top: -12px;
+		background-color: white;
+		position: absolute;
+		left: 773px;
+	}
+	.menu li{
+		list-style-type: none;
+		padding: 2px 17px 0px 4px;
+		text-align: center;
+		cursor: pointer;
+		color:#666;
+	}
+	.menu li span{
+		background-image: url(http://cdn.mysitemyway.com/etc-mysitemyway/icons/legacy-previews/icons/3d-transparent-glass-icons-alphanumeric/068116-3d-transparent-glass-icon-alphanumeric-plus-sign-simple.png);
+		padding: 7px;
+		background-size: contain;
+		margin-right: 10px;
+		float: left;
 	}
 	</style>
 	<meta charset="utf-8"/>
@@ -257,7 +375,12 @@
 	<div class="container-box">
 		<div class="container">
 			<div class="div-box-header" style="">
-				<h3 style="padding: 12px 0px 0px;">Calculadora de Hora de Saida</h3>
+				<span class="titulo">Calculadora de Hora de Saida</span>
+				<span class="options"></span>
+				<div class="menu">
+					<li style="outline: 1px solid lightgray;" id="almoco"><span></span>Almoco</li>
+					<li id="lanche"><span></span>Lanche</li>
+				</div>
 			</div>
 			<div class="error">
 				<span>Informe as horas necessarias</span>
@@ -269,13 +392,14 @@
 			<div class="div-box">
 				<input id="horaDeSaidaAlmoco" class="input-box" type="text" placeholder="Hora de Saida p/ Almoco" ng-model="horaDeSaidaAlmocoAux"/><br>
 				<input id="horaDeChegadaAlmoco" class="input-box" type="text" placeholder="Hora de Chegada do Almoco" ng-model="horaDeChegadaAlmocoAux"/><br>
+				<span class="remove"></span>
 			</div>
 			<div class="div-box-button">
-				<button id="CalcularHora" class="button-box" ng-click="CalcularHora()">Calcular</button>
+				<button id="CalcularHora" class="button-box" ng-click="calcularHora()">Calcular</button>
 			</div>
 			<div class="div-box-footer" style="padding: 0px 0px 10px">
-				<h3 class=" display-none" style="margin-top: 10px;">Hora de Saida Prevista:</h3>
-				<h1 id="HoraDeSaidaPrevista" class="h1-box display-none">{{tempoPrevistoDeSaida}}</h1>
+				<h3 class="resultado" style="margin-top: 10px;">Hora de Saida Prevista:</h3>
+				<h1 id="HoraDeSaidaPrevista" class="h1-box resultado">{{tempoPrevistoDeSaida}}</h1>
 			</div>
 		</div>
 	</div>
