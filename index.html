@@ -71,14 +71,14 @@
 			//Cria Html da div lanche
 			$scope.DivLancheHtml = function(){
 				return '<div class="div-box div light-blue-opacity lanche-form" style="">'
-					+'<input id="horaDeSaidaLanche" class="input-box margin-bottom-15px ng-pristine ng-untouched ng-valid ng-empty" type="text" placeholder="Hora de Saida p/ Lanche" title="Hora de Saida p/ Lanche"><br>'
+					+'<input id="horaDeSaidaLanche" class="input-box margin-bottom-15px ng-pristine ng-untouched ng-valid ng-empty" type="text" placeholder="Hora de Saída p/ Lanche" title="Hora de Saída p/ Lanche"><br>'
 					+'<input id="horaDeChegadaLanche" class="input-box ng-pristine ng-untouched ng-valid ng-empty" type="text" placeholder="Hora de Chegada do Lanche" title="Hora de Chegada do Lanche"><br>'
 					+'<span class="remove" ng-click="remove($event)"></span></div>';
 			}
 			//Cria Html da div Almoco
 			$scope.DivAlmocoHtml = function(){
 				return '<div class="div-box div light-blue-opacity almoco-form" style="">'
-					+'<input id="horaDeSaidaAlmoco" class="input-box margin-bottom-15px ng-pristine ng-untouched ng-valid ng-empty" type="text" placeholder="Hora de Saida p/ Almoco" title="Hora de Saida p/ Almoco"><br>'
+					+'<input id="horaDeSaidaAlmoco" class="input-box margin-bottom-15px ng-pristine ng-untouched ng-valid ng-empty" type="text" placeholder="Hora de Saída p/ Almoco" title="Hora de Saída p/ Almoco"><br>'
 					+'<input id="horaDeChegadaAlmoco" class="input-box ng-pristine ng-untouched ng-valid ng-empty" type="text" placeholder="Hora de Chegada do Almoco" title="Hora de Chegada do Almoco" min="10:00" max="12:00"><br>'
 					+'<span class="remove" ng-click="remove($event)"></span></div>';
 			}
@@ -165,8 +165,6 @@
 						target.val(minRequired.val());
 					}
 				}else{
-					console.log(targetSimbling.val());
-					console.log(target.val());
 					if(targetSimbling.val() > target.val()){
 						target.attr('min',targetSimbling.val());
 						target.val(targetSimbling.val());
@@ -197,7 +195,7 @@
 					}
 					if(angular.element('input').eq(index).val() == ""){
 						var id = "#" + angular.element('input').eq(index).attr("id");
-						$scope.marcaInvalido('input',index,"Informe as horas necessarias");
+						$scope.marcaInvalido('input',index,"Informe as horas necessárias");
 						count += 1; 
 					}else if((inputValue > maxInputValue) || (inputValue < minInputValue)){
 						var id = "#" + angular.element('input').eq(index).attr("id");
@@ -549,7 +547,7 @@
 	<div class="container-box">
 		<div class="container">
 			<div class="div-box-header" style="">
-				<span class="titulo">Calculadora de Hora de Saida</span>
+				<span class="titulo">Calculadora de Hora de Saída</span>
 				<span class="options"></span>
 				<div class="menu">
 					<li style="outline: 1px solid lightgray;" id="almoco"><span></span>Almoco</li>
@@ -557,7 +555,7 @@
 				</div>
 			</div>
 			<div class="error">
-				<span>Informe as horas necessarias</span>
+				<span>Informe as horas necessárias</span>
 			</div>
 			<div class="div-box-hora-entrada div">
 				<input id="horasParaTrabalhar" class="input-box required margin-bottom-15px" type="text" placeholder="Horas a trabalhar" title="Horas a trabalhar"/><br>
@@ -570,7 +568,7 @@
 				<button id="CalcularHora" class="button-box" ng-click="calcularHora()">Calcular</button>
 			</div>
 			<div class="div-box-footer" style="padding: 0px 0px 10px">
-				<h3 class="resultado" style="margin-top: 10px;">Hora de Saida Prevista:</h3>
+				<h3 class="resultado" style="margin-top: 10px;">Hora de Saída Prevista:</h3>
 				<h1 id="HoraDeSaidaPrevista" class="h1-box resultado">{{tempoPrevistoDeSaida}}</h1>
 			</div>
 		</div>
