@@ -57,7 +57,6 @@
 				});
 				angular.element('input').bind('focus',function($event){
 					angular.element($event.target).attr("type","time");
-					//angular.element($event.target).attr("onkeydown","return false");
 					angular.element($event.target).css("padding", "5px 0px 5px 30px");
 				});
 			}
@@ -100,7 +99,6 @@
 					angular.element('h3#lanche').after($scope.DivLancheHtml());
 				}else{
 					angular.element('.lanche-form:last').after($scope.DivLancheHtml());
-					//window.scroll(0,angular.element('.lanche-form:last')[0].offsetTop);
 					$scope.moveTelaPara('.lanche-form:last');
 				}
 				$scope.trocaTipoDoCampo();
@@ -116,21 +114,6 @@
 				angular.element('.lanche-form input').bind('focus',function($event){
 					$scope.InicializaCampos($event);
 				});
-				
-				
-				/*angular.element('#horaDeSaidaLanche').bind('focus',function($event){
-					var min = angular.element('#horaDeEntrada').val();
-					angular.element('#horaDeSaidaLanche').attr({"min":min,"max":"23:59"});
-					angular.element('#horaDeSaidaLanche').val(min);
-				});
-				angular.element('#horaDeSaidaLanche').bind('change',function(){
-					angular.element('#horaDeChegadaLanche').val("");
-				});
-				angular.element('#horaDeChegadaLanche').bind('focus',function(){
-					var min = angular.element('#horaDeSaidaLanche').val();
-					angular.element('#horaDeChegadaLanche').attr({"min":min,"max":"23:59"});
-					angular.element('#horaDeChegadaLanche').val(min);
-				});*/
 			}
 			
 			//Implementação da Função adiciona almoco
@@ -223,6 +206,7 @@
 						}else{
 							$scope.marcaInvalido('input',index,"Horas não podem ser menores que campos anteriores");
 						}
+						$scope.moveTelaPara('.div-box-header');
 						count += 1; 
 					}else{
 						angular.element('input').eq(index).removeClass('invalid');
@@ -375,7 +359,6 @@
 				
 				$scope.calculaSaidaPrevista();
 				$scope.formataSaidaPrevista();
-				//window.scroll(0,angular.element('#HoraDeSaidaPrevista')[0].offsetTop);
 				$scope.moveTelaPara('#HoraDeSaidaPrevista');
 			}
 			$scope.moveTelaPara = function(id){
