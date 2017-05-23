@@ -57,13 +57,14 @@
 				});
 				angular.element('input').bind('focus',function($event){
 					angular.element($event.target).attr("type","time");
-					angular.element($event.target).attr("onkeydown","return false");
+					//angular.element($event.target).attr("onkeydown","return false");
 					angular.element($event.target).css("padding", "5px 0px 5px 30px");
 				});
 			}
 			//Limpa Campos dependentes Após Alteração da Hora de Entrada 
 			angular.element('#horaDeEntrada').change(function(){
 				angular.element('.almoco-form input').val("");
+				angular.element('.lanche-form input').val("");
 			});
 			
 			$scope.trocaTipoDoCampo();
@@ -95,7 +96,13 @@
 			$scope.adicionaLanche = function(){
 				angular.element('.resultado').slideUp();
 				angular.element('h3#lanche').show();
-				angular.element('h3#lanche').after($scope.DivLancheHtml());
+				if(angular.element('.lanche-form').length == 0){
+					angular.element('h3#lanche').after($scope.DivLancheHtml());
+				}else{
+					angular.element('.lanche-form:last').after($scope.DivLancheHtml());
+					//window.scroll(0,angular.element('.lanche-form:last')[0].offsetTop);
+					$scope.moveTelaPara('.lanche-form:last');
+				}
 				$scope.trocaTipoDoCampo();
 				$scope.temLanche = true;
 				angular.element('.lanche-form .remove').bind('click',function(event){
@@ -106,6 +113,24 @@
 						$scope.temLanche = false;
 					}
 				});
+				angular.element('.lanche-form input').bind('focus',function($event){
+					$scope.InicializaCampos($event);
+				});
+				
+				
+				/*angular.element('#horaDeSaidaLanche').bind('focus',function($event){
+					var min = angular.element('#horaDeEntrada').val();
+					angular.element('#horaDeSaidaLanche').attr({"min":min,"max":"23:59"});
+					angular.element('#horaDeSaidaLanche').val(min);
+				});
+				angular.element('#horaDeSaidaLanche').bind('change',function(){
+					angular.element('#horaDeChegadaLanche').val("");
+				});
+				angular.element('#horaDeChegadaLanche').bind('focus',function(){
+					var min = angular.element('#horaDeSaidaLanche').val();
+					angular.element('#horaDeChegadaLanche').attr({"min":min,"max":"23:59"});
+					angular.element('#horaDeChegadaLanche').val(min);
+				});*/
 			}
 			
 			//Implementação da Função adiciona almoco
@@ -147,17 +172,60 @@
 				});
 			};
 			
+			$scope.InicializaCampos = function($event){
+				var target = angular.element($event.target);
+				var targetSimbling = angular.element($event.target).siblings('input');
+				var minRequired = angular.element($event.target).parent().parent().find("#horaDeEntrada");
+				if(target.attr('id') == 'horaDeSaidaLanche'){
+					if(target.val() < minRequired.val()){
+						target.attr('min',minRequired.val());
+						target.val(minRequired.val());
+					}
+				}else{
+					console.log(targetSimbling.val());
+					console.log(target.val());
+					if(targetSimbling.val() > target.val()){
+						target.attr('min',targetSimbling.val());
+						target.val(targetSimbling.val());
+					}
+				}
+				/*console.log(target);
+				console.log(minRequired);
+				var inputs = angular.element('input');
+				for(var i=2;i<inputs.length;i++){
+					minInputValue = angular.element('input').eq(i-1).val();
+					if(angular.element('input').eq(i).val() < minInputValue){
+						angular.element('input').eq(i).attr('min',minInputValue);
+						angular.element('input').eq(i).val(minInputValue);
+					}
+				}*/
+			};
+			
 			//função que valida os campos do formulário
 			$scope.verificaCampos = function(){
 				var inputs = angular.element('input');
 				var count = 0;
-				for(var i=0;i<inputs.length;i++){
-					if(angular.element('input').eq(i).val() == ""){
-						var id = "#" + angular.element('input').eq(i).attr("id");
-						$scope.marcaInvalido(id,"Informe as horas necessarias");
+				for(var index=0;index<inputs.length;index++){
+					var inputValue = angular.element('input').eq(index).val();
+					var minInputValue = angular.element('input').eq(index).attr('min');
+					var maxInputValue = angular.element('input').eq(index).attr('max');
+					if(index>1){
+						minInputValue = angular.element('input').eq(index-1).val();
+					}
+					if(angular.element('input').eq(index).val() == ""){
+						var id = "#" + angular.element('input').eq(index).attr("id");
+						$scope.marcaInvalido('input',index,"Informe as horas necessarias");
+						count += 1; 
+					}else if((inputValue > maxInputValue) || (inputValue < minInputValue)){
+						var id = "#" + angular.element('input').eq(index).attr("id");
+						if(inputValue > maxInputValue){
+							$scope.marcaInvalido('input',index,"Horas precisam estar dentro do limite máximo");
+						}else{
+							$scope.marcaInvalido('input',index,"Horas não podem ser menores que campos anteriores");
+						}
 						count += 1; 
 					}else{
-						angular.element('input').eq(i).removeClass('invalid');
+						angular.element('input').eq(index).removeClass('invalid');
 					}
 				}
 				if(count == 0){
@@ -177,6 +245,14 @@
 			$scope.marcaInvalido = function(field, message){
 				angular.element(field).removeClass('valid');
 				angular.element(field).addClass('invalid');
+				angular.element('#CalcularHora').attr('disabled',true);
+				angular.element('.error span').text(message);
+				angular.element('.error').slideDown(1000);
+			}
+			//Marca campos como inválidos
+			$scope.marcaInvalido = function(field,index, message){
+				angular.element(field).removeClass('valid');
+				angular.element(field).eq(index).addClass('invalid');
 				angular.element('#CalcularHora').attr('disabled',true);
 				angular.element('.error span').text(message);
 				angular.element('.error').slideDown(1000);
@@ -299,9 +375,12 @@
 				
 				$scope.calculaSaidaPrevista();
 				$scope.formataSaidaPrevista();
-				window.scroll(0,angular.element('#HoraDeSaidaPrevista')[0].offsetTop);
+				//window.scroll(0,angular.element('#HoraDeSaidaPrevista')[0].offsetTop);
+				$scope.moveTelaPara('#HoraDeSaidaPrevista');
 			}
-			
+			$scope.moveTelaPara = function(id){
+				window.scroll(0,angular.element(id)[0].offsetTop);
+			}
 		});
 	</script>
 	<style>
