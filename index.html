@@ -6,20 +6,19 @@
 	<link rel='icon' href="https://images.vexels.com/media/users/3/131904/isolated/preview/314ac7a195e5759f2cfadde070a92cc7-reloading-timer-clock-icon-by-vexels.png">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
 	<script type="text/javascript">
+		if(typeof jQuery === 'undefined'){
+			alert('jQuery não foi carregado');
+		}else if(typeof angular === 'undefined'){
+			alert('angular não foi carregado');
+		}else if(typeof moment === 'undefined'){
+			alert('moment não foi carregado');
+		}
+		
 		var app = angular.module('minhaCalculadoraDeHoras', []);
 		app.controller('CalculadoraDeHora', function($scope, $http) {
 			//inicializa hora e dados
-			$scope.hora = {
-				"horasParaTrabalhar":0,
-				"minutosParaTrabalhar":0,
-				"horaDeEntrada":0,
-				"minutosDeEntrada":0,
-				"horaDeSaidaAlmoco":0,
-				"minutosDeSaidaAlmoco":0,
-				"horaDeChegadaAlmoco":0,
-				"minutosDeChegadaAlmoco":0
-			};
 			$scope.temAlmoco = false;
 			$scope.temLanche = false;
 			angular.element('.error').hide();
@@ -66,13 +65,11 @@
 				angular.element('.lanche-form input').val("");
 			});
 			
-			$scope.trocaTipoDoCampo();
-			
 			//Cria Html da div lanche
 			$scope.DivLancheHtml = function(){
 				return '<div class="div-box div light-blue-opacity lanche-form" style="">'
-					+'<input id="horaDeSaidaLanche" class="input-box margin-bottom-15px ng-pristine ng-untouched ng-valid ng-empty" type="text" placeholder="Hora de Saída p/ Lanche" title="Hora de Saída p/ Lanche"><br>'
-					+'<input id="horaDeChegadaLanche" class="input-box ng-pristine ng-untouched ng-valid ng-empty" type="text" placeholder="Hora de Chegada do Lanche" title="Hora de Chegada do Lanche"><br>'
+					+'<input id="horaDeSaidaLanche" class="horaDeSaidaLanche input-box margin-bottom-15px ng-pristine ng-untouched ng-valid ng-empty" type="text" placeholder="Hora de Saída p/ Lanche" title="Hora de Saída p/ Lanche"><br>'
+					+'<input id="horaDeChegadaLanche" class="horaDeChegadaLanche input-box ng-pristine ng-untouched ng-valid ng-empty" type="text" placeholder="Hora de Chegada do Lanche" title="Hora de Chegada do Lanche"><br>'
 					+'<span class="remove" ng-click="remove($event)"></span></div>';
 			}
 			//Cria Html da div Almoco
@@ -170,16 +167,6 @@
 						target.val(targetSimbling.val());
 					}
 				}
-				/*console.log(target);
-				console.log(minRequired);
-				var inputs = angular.element('input');
-				for(var i=2;i<inputs.length;i++){
-					minInputValue = angular.element('input').eq(i-1).val();
-					if(angular.element('input').eq(i).val() < minInputValue){
-						angular.element('input').eq(i).attr('min',minInputValue);
-						angular.element('input').eq(i).val(minInputValue);
-					}
-				}*/
 			};
 			
 			//função que valida os campos do formulário
@@ -224,14 +211,6 @@
 			}
 			
 			//Marca campos como inválidos
-			$scope.marcaInvalido = function(field, message){
-				angular.element(field).removeClass('valid');
-				angular.element(field).addClass('invalid');
-				angular.element('#CalcularHora').attr('disabled',true);
-				angular.element('.error span').text(message);
-				angular.element('.error').slideDown(1000);
-			}
-			//Marca campos como inválidos
 			$scope.marcaInvalido = function(field,index, message){
 				angular.element(field).removeClass('valid');
 				angular.element(field).eq(index).addClass('invalid');
@@ -240,128 +219,64 @@
 				angular.element('.error').slideDown(1000);
 			}
 			
-			//Valida Campos
-			$scope.validaInputHorasParaTrabalhar = function(){
-				if($scope.hora.minutosParaTrabalhar > 60 || $scope.hora.minutosParaTrabalhar < 0 || $scope.hora.horasParaTrabalhar < 0
-						|| ($scope.hora.horasParaTrabalhar >= 24 && $scope.hora.minutosParaTrabalhar > 0)
-						|| (isNaN($scope.hora.horasParaTrabalhar) || isNaN($scope.hora.minutosParaTrabalhar))){
-					return true;
-				}
-				return false;
-			}
-			
-			$scope.validaInputHoraDeEntrada = function(){
-				if($scope.hora.minutosDeEntrada > 60 || $scope.hora.minutosDeEntrada < 0 || $scope.hora.horaDeEntrada < 0
-						|| ($scope.hora.horaDeEntrada >= 24 && $scope.hora.minutosDeEntrada > 0)
-						|| (isNaN($scope.hora.horaDeEntrada) || isNaN($scope.hora.minutosDeEntrada))){
-					return true;
-				}
-				return false;
-			}
-			
-			//função que ler os campos do formulário
-			$scope.lerCamposIniciais = function(){
-				var horasTrabalhadas = angular.element("#horasParaTrabalhar").val();
-				var horasEntrada = angular.element("#horaDeEntrada").val();
-				
-				$scope.hora.minutosParaTrabalhar = parseInt(horasTrabalhadas.slice(3));
-				$scope.hora.minutosDeEntrada = parseInt(horasEntrada.slice(3));
-				$scope.hora.horasParaTrabalhar = parseInt(horasTrabalhadas.slice(0,2));
-				$scope.hora.horaDeEntrada = parseInt(horasEntrada.slice(0,2));
+			//Função que Adiciona horas
+			$scope.adicionaHoras = function(horasTrabalhar,tempoParaSubtrair){
+				return moment(horasTrabalhar).add({ hours: tempoParaSubtrair.hours(), minutes: tempoParaSubtrair.minute()});
 			}
 			
 			//Função que Calcula Almoco
-			$scope.calculaAlmoco = function(){
-				var horasSaidaAlmoco = angular.element("#horaDeSaidaAlmoco").val();
-				var horasChegadaAlmoco = angular.element("#horaDeChegadaAlmoco").val();
-				
-				var SaidaAlmocoMinuto = parseInt(horasSaidaAlmoco.slice(3));
-				var ChegadaAlmocoMinuto = parseInt(horasChegadaAlmoco.slice(3));
-				var SaidaAlmocoHora = parseInt(horasSaidaAlmoco.slice(0,2));
-				var ChegadaAlmocoHora = parseInt(horasChegadaAlmoco.slice(0,2));
-				
-				var horaTrabalhadaParteOne = SaidaAlmocoHora - $scope.hora.horaDeEntrada; 
-				var minutosTrabalhadosParteOne = SaidaAlmocoMinuto - $scope.hora.minutosDeEntrada; 
-				
-				$scope.hora.horasParaTrabalhar -= horaTrabalhadaParteOne; 
-				$scope.hora.minutosParaTrabalhar -= minutosTrabalhadosParteOne; 
-				$scope.hora.horaDeEntrada = ChegadaAlmocoHora;
-				$scope.hora.minutosDeEntrada = ChegadaAlmocoMinuto;
+			$scope.calculaAlmoco = function(horasTrabalhar){
+				var saidaAlmoco = moment(angular.element("#horaDeSaidaAlmoco").val(),"HH:mm");
+				var chegadaAlmoco = moment(angular.element("#horaDeChegadaAlmoco").val(),"HH:mm");
+				var almoco = moment(moment.utc(moment(chegadaAlmoco).diff(moment(saidaAlmoco))).format("HH:mm"),"HH:mm");
+				return $scope.adicionaHoras(horasTrabalhar, almoco);
 			}
 			
 			//Função que Calcula Lanche
-			$scope.calculaLanche = function(){
-				var saidaLanche,chegadaLanche,saidaLancheHora,saidaLancheMinuto,chegadaLancheHora,chegadaLancheMinuto;
-				var horaTrabalhadaParteTwo,minutosTrabalhadosParteTwo;
-				for(var i=0; i< angular.element('.lanche-form').length;i++){
-					saidaLanche = angular.element('.lanche-form').eq(i).children('#horaDeSaidaLanche').val();
-					chegadaLanche = angular.element('.lanche-form').eq(i).children('#horaDeChegadaLanche').val();
-					
-					saidaLancheHora = parseInt(saidaLanche.slice(0,2));
-					saidaLancheMinuto = parseInt(saidaLanche.slice(3));
-					chegadaLancheHora = parseInt(chegadaLanche.slice(0,2));
-					chegadaLancheMinuto = parseInt(chegadaLanche.slice(3));
-										
-					horaTrabalhadaParteTwo = saidaLancheHora - $scope.hora.horaDeEntrada; 
-					minutosTrabalhadosParteTwo = saidaLancheMinuto - $scope.hora.minutosDeEntrada; 
-					
-					$scope.hora.horasParaTrabalhar -= horaTrabalhadaParteTwo; 
-					$scope.hora.minutosParaTrabalhar -= minutosTrabalhadosParteTwo; 
-					$scope.hora.horaDeEntrada = chegadaLancheHora;
-					$scope.hora.minutosDeEntrada = chegadaLancheMinuto;
+			$scope.calculaLanche = function(saida){
+				for(var i=0 ; i<angular.element(".horaDeSaidaLanche").length; i++){
+					var saidaLanche = moment(angular.element(".horaDeSaidaLanche").eq(i).val(),"HH:mm");
+					var chegadaLanche = moment(angular.element(".horaDeChegadaLanche").eq(i).val(),"HH:mm");
+					var lanche = moment(moment.utc(moment(chegadaLanche).diff(moment(saidaLanche))).format("HH:mm"),"HH:mm");
+					saida = $scope.adicionaHoras(saida, lanche);  
 				}
-				
+				return saida;
 			}
 			
 			//Função que Calcula Saida Prevista
 			$scope.calculaSaidaPrevista = function(){
-				$scope.hora.horaPrevistaDeSaida = $scope.hora.horaDeEntrada + $scope.hora.horasParaTrabalhar;
-				$scope.hora.minutoPrevistoDeSaida = $scope.hora.minutosDeEntrada + $scope.hora.minutosParaTrabalhar;
-			}
-			
-			//Função que formata Saida Prevista
-			$scope.formataSaidaPrevista = function(){
-				if( $scope.hora.minutoPrevistoDeSaida >= 60){
-					var dividendo = parseInt($scope.hora.minutoPrevistoDeSaida / 60); 
-					var resto = $scope.hora.minutoPrevistoDeSaida % 60;
-					$scope.hora.horaPrevistaDeSaida += dividendo;
-					$scope.hora.minutoPrevistoDeSaida = resto;
+				var horasTrabalhar = moment(angular.element('#horasParaTrabalhar').val(),"HH:mm");
+				var entrada = moment(angular.element("#horaDeEntrada").val(),"HH:mm");
+				var saida;
+				
+				if($scope.temAlmoco){
+					saida = $scope.calculaAlmoco(horasTrabalhar);
 				}
-				if($scope.hora.horaPrevistaDeSaida > 23){
-					$scope.hora.horaPrevistaDeSaida = $scope.hora.horaPrevistaDeSaida - 24;
-					if(angular.element('.div-box-footer p').val() != undefined){
-						angular.element('.div-box-footer p').text('No próximo dia');
+				if($scope.temLanche){
+					if(saida != undefined){
+						saida = $scope.calculaLanche(saida);
 					}else{
-						angular.element('#HoraDeSaidaPrevista').after('<p>No próximo dia</p>');
+						saida = $scope.calculaLanche(horasTrabalhar);
 					}
-				}else{
-					angular.element('.div-box-footer p').remove();
 				}
-				$scope.hora.horaPrevistaDeSaida = $scope.hora.horaPrevistaDeSaida < 10 ? "0"+$scope.hora.horaPrevistaDeSaida : $scope.hora.horaPrevistaDeSaida; 
-				$scope.hora.minutoPrevistoDeSaida = $scope.hora.minutoPrevistoDeSaida < 10 ? "0"+$scope.hora.minutoPrevistoDeSaida : $scope.hora.minutoPrevistoDeSaida;
-				
-				$scope.tempoPrevistoDeSaida = $scope.hora.horaPrevistaDeSaida +":"+$scope.hora.minutoPrevistoDeSaida;
-				
+				if(saida != undefined){
+					$scope.tempoPrevistoDeSaida = $scope.adicionaHoras(entrada,saida).format("HH:mm");
+				}else{
+					$scope.tempoPrevistoDeSaida = $scope.adicionaHoras(entrada,horasTrabalhar).format("HH:mm");
+				}
 			}
 			
 			//Função Calcula hora
 			$scope.calcularHora = function(){
-				$scope.lerCamposIniciais();
 				angular.element('.resultado').slideDown();
-				if( $scope.temAlmoco == true){
-					$scope.calculaAlmoco();
-				}
-				if( $scope.temLanche == true){
-					$scope.calculaLanche();
-				}
-				
 				$scope.calculaSaidaPrevista();
-				$scope.formataSaidaPrevista();
 				$scope.moveTelaPara('#HoraDeSaidaPrevista');
 			}
 			$scope.moveTelaPara = function(id){
 				window.scroll(0,angular.element(id)[0].offsetTop);
 			}
+			
+			$scope.trocaTipoDoCampo();
 		});
 	</script>
 	<style>
@@ -513,11 +428,11 @@
 		z-index: 100;
 		outline: 1px solid lightgray;
 		box-shadow: 0px 0px 0.5px grey inset;
-		float: right;
 		margin-top: -12px;
 		background-color: white;
+		width: 145px;
+		left: 54.3%;
 		position: absolute;
-		left: 773px;
 	}
 	.menu li{
 		list-style-type: none;
