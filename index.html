@@ -6,6 +6,7 @@
 	<link rel='icon' href="https://images.vexels.com/media/users/3/131904/isolated/preview/314ac7a195e5759f2cfadde070a92cc7-reloading-timer-clock-icon-by-vexels.png">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+	<script src="https:////ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-animate.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
 	<script type="text/javascript">
 		if(typeof jQuery === 'undefined'){
@@ -16,11 +17,17 @@
 			alert('moment não foi carregado');
 		}
 		
-		var app = angular.module('minhaCalculadoraDeHoras', []);
+		var app = angular.module('minhaCalculadoraDeHoras', ['ngAnimate']);
 		app.controller('CalculadoraDeHora', function($scope, $http) {
 			//inicializa hora e dados
 			$scope.temAlmoco = false;
 			$scope.temLanche = false;
+			$scope.qtdDias = 0;
+			$scope.regimeDeHoras = 0;
+			$scope.numRegimeDeTrabalho = [20,30,40,41,42,43,44];
+			$scope.numDiasDaSemana = [1,2,3,4,5,6,7];
+			$scope.diasDaSemana = ['Segunda-Feira','Terça-Feira','Quarta-Feira','Quinta-Feira','Sexta-Feira','Sábado','Domingo'];
+			$scope.tempoRestante = "";
 			angular.element('.error').hide();
 			angular.element('.menu').hide();
 			angular.element('.div-box').hide();
@@ -28,9 +35,24 @@
 			angular.element('h3#lanche').hide();
 			angular.element('h3#almoco').hide();
 			
-			//Verifica Campos 
-			angular.element('.div-box-button').mouseenter(function(){
-				$scope.verificaCampos();
+			//Side-menu 
+			angular.element('.side-menu span').click(function(event){
+				angular.element('.side-menu span').removeClass("active");
+				angular.element(this).addClass("active");
+
+				if(angular.element(this).hasClass("horarioSemanal")){
+					angular.element(".container-box").hide();
+					angular.element(".container-horarioSemanal").show();
+				}else if(angular.element(this).hasClass("calculadoraDiaria")){
+					angular.element(".container-box").hide();
+					angular.element(".container-calculadoraDiaria").show();
+				}else if(angular.element(this).hasClass("jira")){
+					angular.element(".container-box").hide();
+					angular.element(".container-jira").show();
+				}else if(angular.element(this).hasClass("timetrex")){
+					angular.element(".container-box").hide();
+					angular.element(".container-timetrex").show();
+				};
 			});
 			
 			//Mostra Menu
@@ -49,16 +71,25 @@
 			});
 			
 			//Altera Tipo dos Campos
-			$scope.trocaTipoDoCampo = function(){
-				angular.element('input').bind('blur',function($event){
+			$scope.trocaTipo = function(){
+				angular.element('.container-calculadoraDiaria input, .container-horarioSemanal input').bind('blur',function($event){
 					angular.element($event.target).attr("type","text");
 					angular.element($event.target).css("padding", "8px 15px");
 				});
-				angular.element('input').bind('focus',function($event){
+				angular.element('.container-calculadoraDiaria input').bind('focus',function($event){
 					angular.element($event.target).attr("type","time");
 					angular.element($event.target).css("padding", "5px 0px 5px 30px");
 				});
 			}
+			
+			$scope.trocaTipoDoCampo = function(event){
+				if(angular.element(event.target).attr('type') == 'text'){
+					angular.element(event.target).attr('type','time');
+				}else{
+					angular.element(event.target).attr('type','text');
+				}
+			}
+			
 			//Limpa Campos dependentes Após Alteração da Hora de Entrada 
 			angular.element('#horaDeEntrada').change(function(){
 				angular.element('.almoco-form input').val("");
@@ -98,7 +129,7 @@
 					angular.element('.lanche-form:last').after($scope.DivLancheHtml());
 					$scope.moveTelaPara('.lanche-form:last');
 				}
-				$scope.trocaTipoDoCampo();
+				$scope.trocaTipo();
 				$scope.temLanche = true;
 				angular.element('.lanche-form .remove').bind('click',function(event){
 					angular.element(event.target.parentElement).remove();
@@ -120,7 +151,7 @@
 				angular.element('h3#almoco').show();
 				angular.element('h3#almoco').after($scope.DivAlmocoHtml());
 				angular.element('#almoco').css('opacity','0.5');
-				$scope.trocaTipoDoCampo();
+				$scope.trocaTipo();
 				$scope.temAlmoco = true;
 				angular.element('.almoco-form .remove').bind('click',function(event){
 					angular.element(event.target.parentElement).remove();
@@ -171,50 +202,51 @@
 			
 			//função que valida os campos do formulário
 			$scope.verificaCampos = function(){
-				var inputs = angular.element('input');
+				var inputs = angular.element('.container-calculadoraDiaria input');
 				var count = 0;
+				var temErro = false;
 				for(var index=0;index<inputs.length;index++){
-					var inputValue = angular.element('input').eq(index).val();
-					var minInputValue = angular.element('input').eq(index).attr('min');
-					var maxInputValue = angular.element('input').eq(index).attr('max');
+					var inputValue = angular.element('.container-calculadoraDiaria input').eq(index).val();
+					var minInputValue = angular.element('.container-calculadoraDiaria input').eq(index).attr('min');
+					var maxInputValue = angular.element('.container-calculadoraDiaria input').eq(index).attr('max');
 					if(index>1){
-						minInputValue = angular.element('input').eq(index-1).val();
+						minInputValue = angular.element('.container-calculadoraDiaria input').eq(index-1).val();
 					}
-					if(angular.element('input').eq(index).val() == ""){
-						var id = "#" + angular.element('input').eq(index).attr("id");
-						$scope.marcaInvalido('input',index,"Informe as horas necessárias");
+					if(angular.element('.container-calculadoraDiaria input').eq(index).val() == ""){
+						$scope.marcaInvalido('.container-calculadoraDiaria input',index,"Informe as horas necessárias");
 						count += 1; 
+						temErro = true;
 					}else if((inputValue > maxInputValue) || (inputValue < minInputValue)){
-						var id = "#" + angular.element('input').eq(index).attr("id");
 						if(inputValue > maxInputValue){
-							$scope.marcaInvalido('input',index,"Horas precisam estar dentro do limite máximo");
+							$scope.marcaInvalido('.container-calculadoraDiaria input',index,"Horas precisam estar dentro do limite máximo");
 						}else{
-							$scope.marcaInvalido('input',index,"Horas não podem ser menores que campos anteriores");
+							$scope.marcaInvalido('.container-calculadoraDiaria input',index,"Horas não podem ser menores que campos anteriores");
 						}
-						$scope.moveTelaPara('.div-box-header');
+						$scope.moveTelaPara('.container-calculadoraDiaria .div-box-header');
 						count += 1; 
+						temErro = true;
 					}else{
-						angular.element('input').eq(index).removeClass('invalid');
+						angular.element('.container-calculadoraDiaria input').eq(index).removeClass('invalid');
 					}
 				}
 				if(count == 0){
-					$scope.marcaValido();
+					$scope.marcaValido('.container-calculadoraDiaria input');
+					temErro = false;
 				}
+				return temErro;
 			}
 			
 			//Marca campos como válidos
-			$scope.marcaValido = function(){
-				angular.element('#CalcularHora').attr('disabled',false);
+			$scope.marcaValido = function(field){
 				angular.element('.error').slideUp(1000);
-				angular.element('input').removeClass('invalid');
-				angular.element('input').addClass('valid');
+				angular.element(field).removeClass('invalid');
+				angular.element(field).addClass('valid');
 			}
 			
 			//Marca campos como inválidos
 			$scope.marcaInvalido = function(field,index, message){
 				angular.element(field).removeClass('valid');
 				angular.element(field).eq(index).addClass('invalid');
-				angular.element('#CalcularHora').attr('disabled',true);
 				angular.element('.error span').text(message);
 				angular.element('.error').slideDown(1000);
 			}
@@ -265,33 +297,133 @@
 					$scope.tempoPrevistoDeSaida = $scope.adicionaHoras(entrada,horasTrabalhar).format("HH:mm");
 				}
 			}
+
+			$scope.calculaHorasRestantes = function(){
+				var horasTrabalhar = moment();
+				var horasTrabalhadas = moment();
+				horasTrabalhadas.add(parseInt($scope.regimeDeHoras),'h');
+				
+				inputs = angular.element('.container-horarioSemanal .div-box-hora-entrada input');
+				for(var i=0; i< inputs.length; i++){
+					var tempo = inputs.eq(i).val();
+					if(tempo != ""){
+						var index = tempo.indexOf(':');
+						var horasRestante = parseInt(tempo.substr(0,index));
+						var minutosRestante = parseInt(tempo.substr(index +1));
+						horasTrabalhadas.subtract({'hours': horasRestante,'minutes': minutosRestante});
+					}
+				}
+				
+				horasDiff = horasTrabalhadas.diff(horasTrabalhar,'hours');
+				diasDiff = horasTrabalhadas.diff(horasTrabalhar,'days');
+				
+				var tempo = moment.utc(horasTrabalhadas.diff(horasTrabalhar)).format("HH:mm");
+				var index = tempo.indexOf(':');
+				var horasRestante = parseInt(tempo.substr(0,index));
+				var minutosRestante = tempo.substr(index +1);
+				horasRestante = horasRestante + (24*diasDiff);
+				if(horasRestante < 10) horasRestante = "0" + horasRestante;
+				$scope.tempoRestante = horasRestante + ":" + minutosRestante;
+				
+			}
+			
+			$scope.CopiarTempoRestanteNaCalculadoraDiaria = function(){
+				angular.element('.container-calculadoraDiaria #horasParaTrabalhar').val($scope.tempoRestante);
+				angular.element('.calculadoraDiaria').click();
+			}
 			
 			//Função Calcula hora
 			$scope.calcularHora = function(){
-				angular.element('.resultado').slideDown();
-				$scope.calculaSaidaPrevista();
-				$scope.moveTelaPara('#HoraDeSaidaPrevista');
+				if(!$scope.verificaCampos()){
+					angular.element('.resultado').slideDown();
+					$scope.calculaSaidaPrevista();
+					$scope.moveTelaPara('#HoraDeSaidaPrevista');
+				}
 			}
 			$scope.moveTelaPara = function(id){
 				window.scroll(0,angular.element(id)[0].offsetTop);
 			}
 			
-			$scope.trocaTipoDoCampo();
+			//$scope.trocaTipoDoCampo();
 		});
 	</script>
 	<style>
+	.container-body{
+		display: block;
+		margin: auto;
+		width: 500px;
+	}
+	.side-menu{
+		width: 35px;
+		height: 180px;
+		padding: 5px 0px;
+		float: left;
+	}
+	.side-menu span{
+		display: block;
+		width: 35px;
+		text-align: center;
+		height: 50px;
+		vertical-align: bottom;
+		float: right;
+		background-color: rgba(230,230,230,0.85);
+		border: 1px solid #EEE;
+		border-right: 0;
+		border-radius: 10px 0px 0px 10px;
+		cursor: pointer;
+		background-image: url();
+		background-size: contain;
+		background-position: center;
+		background-repeat: no-repeat;
+		margin-bottom: -5px;
+		z-index: 1;
+		position: relative;
+	}
+	.side-menu span.active{
+		background-color: white;
+		border: 1px solid darkgray;
+		border-right: 0px;
+		z-index: 10;
+	}
+	.side-menu span.horarioSemanal{
+		background-image: url(https://cdn2.iconfinder.com/data/icons/social-media-8/512/note3.png);
+		background-size: 80%;
+		background-blend-mode: luminosity;
+	}
+	.side-menu span.calculadoraDiaria{
+		background-image: url(https://iconglory.com/wp-content/uploads/edd/2017/05/calculator-1-featured-1000x750.png);
+		background-blend-mode: luminosity;
+	}
+	.side-menu span.jira{
+		background-image: url(https://cdn.iconverticons.com/files/png/a8dda0e01bb0031b_256x256.png);
+		background-blend-mode: luminosity;
+		background-size: 75%;
+	}
+	.side-menu span.timetrex{
+		background-image: url(http://timetrex.ifactory.com.br/interface/send_file.php?api=1&object_type=smcopyright&t=1509539211005);
+		background-blend-mode: luminosity;
+		background-size: initial;
+		background-position-x: -77px;
+	}
 	.container{
 		background-color: white;
 	}
 	.container-box{
-		display: block;
 		width: 400px;
-		margin: auto;
-		/*margin-top:100px;*/
 		border: 1px solid lightgrey;
 		border-radius: 5px;
 		padding: 5px 0px;
 		background-color: lightseagreen;
+		float: left;
+	}
+	.container-box.container-horarioSemanal{
+		min-height: 240px;
+	}
+	.container-box.container-jira{
+		min-height: 240px;
+	}
+	.container-box.container-timetrex{
+		min-height: 240px;
 	}
 	.div-box-header{
 		border:0;
@@ -342,13 +474,39 @@
 		color:lightseagreen;
 		font-size: 20px;
 		font-weight: bold;
-		padding: 20px 10px
+		padding: 20px 10px;
+		display: block;
+		width: fit-content;
+		margin: auto;
+	}
+	.container-calculadoraDiaria .div-box-header span.titulo{
+		margin-left: 60px;
+		color:lightseagreen;
+		font-size: 20px;
+		font-weight: bold;
+		padding: 20px 10px;
+		display: inline-block;
+		width: initial;
 	}
 	.div-box-footer{
 		border:0;
 		border-top: 1px solid lightgray;
 		margin-top: 5px;
 		text-align: center;
+	}
+	
+	.div-box-footer #copiar-para-calculadora-diaria{
+		background-color: white;
+		border: 1px solid #CCC;
+		border-radius: 5px;
+		background-image: url(http://www.urltarget.com/images/flat-file-theme-action-copy-icon.png);
+		background-repeat: no-repeat;
+		background-size: 60%;
+		background-position: center;
+		height: 25px;
+		width: 25px;
+		opacity: 0.8;
+		cursor: pointer;
 	}
 	.div-box-hora-entrada{
 		margin-top: 10px;
@@ -394,6 +552,7 @@
 		padding: 5px;
 		background-color: darkseagreen;
 		margin: auto;
+		display:inline-block;
 	}
 	h3{
 		color: seagreen;
@@ -401,6 +560,12 @@
 	}
 	.display-none{
 		display: none;
+	}
+	.display-block{
+		display: block;
+	}
+	.bold{
+		font-weight: bold;
 	}
 	.error{
 		background-color:red;
@@ -431,7 +596,7 @@
 		margin-top: -12px;
 		background-color: white;
 		width: 145px;
-		left: 54.3%;
+		left: 53.3%;
 		position: absolute;
 	}
 	.menu li{
@@ -459,37 +624,115 @@
 	.margin-bottom-15px{
 		margin-bottom: 15px;
 	}
+	.container-horarioSemanal span.subtitulo, .container-calculadoraDiaria span.subtitulo{
+		width: fit-content;
+		color: lightseagreen;
+		display: block;
+		margin: auto;
+	}
+
+	/*ANGULAR ANIMATE*/
+	.animate-show-hide.ng-hide {
+	  opacity: 0;
+	}
+
+	.animate-show-hide.ng-hide-add,
+	.animate-show-hide.ng-hide-remove {
+	  transition: all linear 1s;
+	}
+	
 	</style>
 </head>
 <body ng-app="minhaCalculadoraDeHoras" ng-controller="CalculadoraDeHora">
-	<div class="container-box">
-		<div class="container">
-			<div class="div-box-header" style="">
-				<span class="titulo">Calculadora de Hora de Saída</span>
-				<span class="options"></span>
-				<div class="menu">
-					<li style="outline: 1px solid lightgray;" id="almoco"><span></span>Almoco</li>
-					<li id="lanche"><span></span>Lanche</li>
+	<div class="container-body">
+		<div class="side-menu">
+			<span class="horarioSemanal active" title="Calculador de Horário Semanal"></span>
+			<span class="calculadoraDiaria" title="Calculador de Horário de Saída"></span>
+			<span class="jira" title="Jira" style="display:none;"></span>
+			<span class="timetrex" title="Timetrex" style="display:none;"></span>
+		</div>
+		<div class="container-box container-horarioSemanal">
+			<div class="container">
+				<div class="div-box-header" style="">
+					<span class="titulo">Calculadora de Horário Semanal</span>
+				</div>
+				<div class="div-box-header" style="">
+					<span class="subtitulo">Informe o regime de trabalhado</span>
+					<div style="display: flex;margin: 15px 10px;flex-wrap: wrap;">
+						<span style="width: 50%;height: fit-content;text-align: center;" class="subtitulo">Dias da Semana</span>
+						<span style="width: 50%;height: fit-content;text-align: center;" class="subtitulo">Horas Semanais</span>
+						<select id="qtdDias" style="width: 35%" class="input-box" title="Dias da Semana" ng-model="qtdDias">
+							<option value="{{dia}}" ng-repeat="dia in numDiasDaSemana">{{dia}}</option>
+						</select>
+						<select style="width: 35%" class="input-box" title="Regime de Trabalho" ng-model="regimeDeHoras">
+							<option value="{{hora}}" ng-repeat="hora in numRegimeDeTrabalho">{{hora}}</option>
+						</select>
+					</div>
+				</div>
+				<span class="subtitulo animate-show-hide" ng-show="qtdDias > 0 && regimeDeHoras > 0">Informe as horas trabalhadas na semana</span>
+				<div class="div-box-hora-entrada div animate-show-hide" ng-show="qtdDias > 0 && regimeDeHoras > 0">
+					<div ng-repeat="dia in diasDaSemana | limitTo: qtdDias">
+						<input id="{{dia}}" class="input-box margin-bottom-15px" type="text" placeholder="{{dia}}" 
+							title="Horas trabalhadas na {{dia}}" ng-focus="trocaTipoDoCampo($event)" ng-blur="trocaTipoDoCampo($event)"/><br>
+					</div>
+					<div class="div-box-button">
+						<button class="button-box" ng-click="calculaHorasRestantes()">Calcular</button>
+					</div>
+					<div class="div-box-footer" style="padding: 0px 0px 10px" ng-show="tempoRestante != ''">
+						<h3 class="" style="margin-top: 10px;">Tempo Restante:</h3>
+						<h1 class="h1-box">{{tempoRestante}}</h1>
+						<button id="copiar-para-calculadora-diaria" ng-click="CopiarTempoRestanteNaCalculadoraDiaria()" title="Copiar para Calculadora Diaria"></button>
+					</div>
 				</div>
 			</div>
-			<div class="error">
-				<span>Informe as horas necessárias</span>
+		</div>
+		<div class="container-box container-calculadoraDiaria" style="display:none;">
+			<div class="container">
+				<div class="div-box-header" style="">
+					<span class="titulo">Calculadora de Hora de Saída</span>
+					<span class="options"></span>
+					<div class="menu">
+						<li style="outline: 1px solid lightgray;" id="almoco"><span></span>Almoco</li>
+						<li id="lanche"><span></span>Lanche</li>
+					</div>
+				</div>
+				<div class="error">
+					<span>Informe as horas necessárias</span>
+				</div>
+				<span class="subtitulo">Informe as horas trabalhadas hoje</span>
+				<div class="div-box-hora-entrada div">
+					<input id="horasParaTrabalhar" class="input-box required margin-bottom-15px" type="text" 
+						placeholder="Horas a trabalhar" title="Horas a trabalhar" ng-focus="trocaTipoDoCampo($event)" ng-blur="trocaTipoDoCampo($event)"/><br>
+					<input id="horaDeEntrada" class="input-box required" type="text" 
+						placeholder="Hora de Entrada" title="Hora de Entrada" ng-focus="trocaTipoDoCampo($event)" ng-blur="trocaTipoDoCampo($event)"/><br>
+				</div>
+				<h3 id="almoco">Almoco</h3>
+				<h3 id="lanche">Lanche</h3>	
+				
+				<div class="div-box-button">
+					<button id="CalcularHora" class="button-box" ng-click="calcularHora()">Calcular</button>
+				</div>
+				<div class="div-box-footer" style="padding: 0px 0px 10px">
+					<h3 class="resultado" style="margin-top: 10px;">Hora de Saída Prevista:</h3>
+					<h1 id="HoraDeSaidaPrevista" class="h1-box resultado">{{tempoPrevistoDeSaida}}</h1>
+				</div>
 			</div>
-			<div class="div-box-hora-entrada div">
-				<input id="horasParaTrabalhar" class="input-box required margin-bottom-15px" type="text" placeholder="Horas a trabalhar" title="Horas a trabalhar"/><br>
-				<input id="horaDeEntrada" class="input-box required" type="text" placeholder="Hora de Entrada" title="Hora de Entrada"/><br>
+		</div>
+		<div class="container-box container-jira" style="display:none;">
+			<div class="container">
+				<div class="div-box-header" style="">
+					<span class="titulo">Jira</span>
+				</div>
 			</div>
-			<h3 id="almoco">Almoco</h3>
-			<h3 id="lanche">Lanche</h3>	
-			
-			<div class="div-box-button">
-				<button id="CalcularHora" class="button-box" ng-click="calcularHora()">Calcular</button>
-			</div>
-			<div class="div-box-footer" style="padding: 0px 0px 10px">
-				<h3 class="resultado" style="margin-top: 10px;">Hora de Saída Prevista:</h3>
-				<h1 id="HoraDeSaidaPrevista" class="h1-box resultado">{{tempoPrevistoDeSaida}}</h1>
+		</div>
+		<div class="container-box container-timetrex" style="display:none;">
+			<div class="container">
+				<div class="div-box-header" style="">
+					<span class="titulo">Timetrex</span>
+				</div>
 			</div>
 		</div>
 	</div>
 </body>
+
 </html>
