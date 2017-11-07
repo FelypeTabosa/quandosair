@@ -344,6 +344,73 @@
 				window.scroll(0,angular.element(id)[0].offsetTop);
 			}
 			
+			/*
+			*
+			*	Jira Container
+			*/
+			$scope.jiraUserNameLogin = "";
+			$scope.jiraUserPasswordLogin = "";
+			$scope.jiraHost = "http://jira.ifactory.com.br";
+			$scope.jiraPathLogin = "/rest/auth/1/session";
+			$scope.jiraPathLogout = "/rest/auth/1/session";
+			$scope.jiraPathIssuesToMe = "/rest/api/2/search?jql=assignee=";
+			$scope.jiraUserName = "";
+			$scope.jiraSession = null;
+			
+			$scope.fazerLoginNoJira = function(){
+				var host = $scope.jiraHost + $scope.jiraPathLogin;
+				$http({
+					url: host,
+					method: "POST",
+					data: { "username": $scope.jiraUserNameLogin,
+					"password": $scope.jiraUserPasswordLogin }
+				}).then(function(response){
+						if(response.data.session != null && response.data.session != 'undefined') $scope.jiraSession = response.data.session;
+						console.log(response.data);
+					}, function(error){
+						console.log(error);
+					});
+			}
+			
+			$scope.fazerLogoutNoJira = function(){
+				var host = $scope.jiraHost + $scope.jiraPathLogout;
+				$http.delete(host)
+					.then(function(response){
+						if(response.status != null && response.status != 'undefined' && response.status == 204) {
+							$scope.jiraSession = null;
+							$scope.jiraUserName = "";
+							$scope.jiraUserNameLogin = "";
+							$scope.jiraUserPasswordLogin = "";
+						}
+						console.log(response);
+					}, function(error){
+						console.log(error);
+					});
+			}
+			
+			$scope.getUsuarioLogadoNoJira = function(){
+				var host = $scope.jiraHost + $scope.jiraPathGetUserLogado;
+				$http.get(host)
+					.then(function(response){
+						if(response.data != null && response.data != 'undefined') {
+							$scope.jiraUserName = response.data.name;
+						}
+						console.log(response);
+					}, function(error){
+						console.log(error);
+					});
+			}
+			
+			$scope.listarIssuesAtribuidasParaMim = function(){
+				var host = $scope.jiraHost + $scope.jiraPathIssuesToMe + $scope.jiraUserName;
+				$http.get(host)
+					.then(function(response){
+						console.log(response.data);
+					}, function(error){
+						console.log(error);
+					});
+			}
+			
 			//$scope.trocaTipoDoCampo();
 		});
 	</script>
@@ -615,7 +682,7 @@
 	.margin-bottom-15px{
 		margin-bottom: 15px;
 	}
-	.container-horarioSemanal span.subtitulo, .container-calculadoraDiaria span.subtitulo{
+	.container-horarioSemanal span.subtitulo, .container-calculadoraDiaria span.subtitulo, .container-jira span.subtitulo{
 		width: fit-content;
 		color: lightseagreen;
 		display: block;
@@ -639,7 +706,7 @@
 		<div class="side-menu">
 			<span class="horarioSemanal active" title="Calculador de Horário Semanal"></span>
 			<span class="calculadoraDiaria" title="Calculador de Horário de Saída"></span>
-			<span class="jira" title="Jira" style="display:none;"></span>
+			<span class="jira" title="Jira" ></span>
 			<span class="timetrex" title="Timetrex" style="display:none;"></span>
 		</div>
 		<div class="container-box container-horarioSemanal">
@@ -713,6 +780,22 @@
 			<div class="container">
 				<div class="div-box-header" style="">
 					<span class="titulo">Jira</span>
+				</div>
+				<div class="div-box-header div">
+					<div ng-show="jiraSession == null">
+						<span class="subtitulo">Faça login no Jira</span>
+					<input class="input-box required margin-bottom-15px" type="text" 
+						placeholder="Usuário" title="Usuário" ng-model="jiraUserNameLogin"/><br>
+					<input class="input-box required margin-bottom-15px" type="password" 
+						placeholder="Senha" title="Senha" ng-model="jiraUserPasswordLogin"/><br>
+					</div>
+					<div class="div-box-button" ng-show="jiraSession == null">
+						<button class="button-box" ng-click="fazerLoginNoJira()">Fazer Login</button>
+					</div>
+					<div ng-show="jiraSession != null">
+						<span class="subtitulo">Log as horas trabalhadas no Jira</span>
+						<span ng-repeat="issue in jiraIssuesToMe.issues"></br>
+					</div>
 				</div>
 			</div>
 		</div>
