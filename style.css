@@ -1,0 +1,283 @@
+.container-body{
+	display: block;
+	margin: auto;
+	width: 500px;
+}
+.side-menu{
+	width: 35px;
+	height: 180px;
+	padding: 5px 0px;
+	float: left;
+}
+.side-menu span{
+	display: block;
+	width: 35px;
+	text-align: center;
+	height: 50px;
+	vertical-align: bottom;
+	float: right;
+	background-color: rgba(230,230,230,0.85);
+	border: 1px solid #EEE;
+	border-right: 0;
+	border-radius: 10px 0px 0px 10px;
+	cursor: pointer;
+	background-image: url();
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	margin-bottom: -5px;
+	z-index: 1;
+	position: relative;
+}
+.side-menu span.active{
+	background-color: white;
+	border: 1px solid darkgray;
+	border-right: 0px;
+	z-index: 10;
+}
+.side-menu span.horarioSemanal{
+	background-image: url(https://cdn2.iconfinder.com/data/icons/social-media-8/512/note3.png);
+	background-size: 80%;
+	background-blend-mode: luminosity;
+}
+.side-menu span.calculadoraDiaria{
+	background-image: url(https://iconglory.com/wp-content/uploads/edd/2017/05/calculator-1-featured-1000x750.png);
+	background-blend-mode: luminosity;
+}
+.side-menu span.jira{
+	background-image: url(https://cdn.iconverticons.com/files/png/a8dda0e01bb0031b_256x256.png);
+	background-blend-mode: luminosity;
+	background-size: 75%;
+}
+.side-menu span.timetrex{
+	background-image: url(http://timetrex.ifactory.com.br/interface/send_file.php?api=1&object_type=smcopyright&t=1509539211005);
+	background-blend-mode: luminosity;
+	background-size: initial;
+	background-position-x: -77px;
+}
+.container{
+	background-color: white;
+}
+.container-box{
+	width: 400px;
+	border: 1px solid lightgrey;
+	border-radius: 5px;
+	padding: 5px 0px;
+	background-color: lightseagreen;
+	float: left;
+}
+.div-box-header{
+	border:0;
+	border-bottom: 1px solid lightgray;
+	margin-bottom: 5px;
+}
+.div-box-header span{
+	display: inline-block;
+}
+.div-box-header span.options{
+	float: right;
+	margin-right: 12px;
+	margin-top: 12px;
+	height: 35px;
+	width: 35px;
+	background: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqg2zc6VJoBUtBItdjGtpmpR-6H9IoiHBD3v620Oanog9AYOUV);
+	background-clip: content-box;
+	background-size: 20px;
+	background-repeat: no-repeat;
+	background-position: center;
+	box-shadow: 0px 0px 0.5px grey inset;
+	padding: 2px;
+	cursor:pointer;
+}
+.div-box-header span.options:hover{
+	outline: 1px solid lightgray; 
+}
+span.remove{
+	float: left;
+	margin-left: 32px;
+	margin-top: -62px;
+	height: 35px;
+	width: 35px;
+	background: url(https://cdn4.iconfinder.com/data/icons/icocentre-free-icons/114/f-cross_256-128.png);
+	background-clip: content-box;
+	background-size: 20px;
+	background-repeat: no-repeat;
+	background-position: center;
+	box-shadow: 0px 0px 0.5px grey inset;
+	padding: 2px;
+	cursor: pointer;
+}
+span.remove:hover{
+	outline: 1px solid lightgray; 
+}
+.div-box-header span.titulo{
+	margin-left: 60px;
+	color:lightseagreen;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 20px 10px;
+	display: block;
+	width: fit-content;
+	margin: auto;
+}
+.container-calculadoraDiaria .div-box-header span.titulo{
+	margin-left: 60px;
+	color:lightseagreen;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 20px 10px;
+	display: inline-block;
+	width: initial;
+}
+.div-box-footer{
+	border:0;
+	border-top: 1px solid lightgray;
+	margin-top: 5px;
+	text-align: center;
+}
+
+.div-box-footer #copiar-para-calculadora-diaria{
+	background-color: white;
+	border: 1px solid #CCC;
+	border-radius: 5px;
+	background-image: url(http://www.urltarget.com/images/flat-file-theme-action-copy-icon.png);
+	background-repeat: no-repeat;
+	background-size: 60%;
+	background-position: center;
+	height: 25px;
+	width: 25px;
+	opacity: 0.8;
+	cursor: pointer;
+}
+.div-box-hora-entrada{
+	margin-top: 10px;
+}
+.div-box-button{
+	background-color: lightseagreen;
+	padding: 10px;
+}
+.input-box{
+	/*display: block;*/
+	width: 50%;
+	text-align: center;
+	font-size: 15px;
+	border: 0px;
+	padding: 8px 15px;
+	margin: auto;
+	border-radius: 10px;
+	box-shadow: 0px 0px 6px #BBB;
+	color:lightseagreen;
+	font-size:15px;
+}
+.button-box{
+	display: block;
+	width: 100%;
+	margin: auto;
+	/*padding: 10px 0px;*/
+	font-size: 15px;
+	font-weight: bold;
+	background-color: lightseagreen;
+	border-radius: 10px;
+	color: white;
+	border: 0px;
+	cursor: pointer;
+}
+.input-box:focus{
+	outline: 0px;
+}
+.h1-box{
+	width: 30%;
+	border-radius: 10px;
+	color: white;
+	box-shadow: 0px 0px 3px darkgrey;
+	padding: 5px;
+	background-color: darkseagreen;
+	margin: auto;
+	display:inline-block;
+}
+h3{
+	color: seagreen;
+	text-align:center;
+}
+.display-none{
+	display: none;
+}
+.display-block{
+	display: block;
+}
+.bold{
+	font-weight: bold;
+}
+.error{
+	background-color:red;
+	height:40px;
+	color:white;
+	margin-top:-2px;
+	padding-top:10px;
+	box-sizing:border-box;
+	font-size:18px;
+	text-align: center;
+}
+.invalid{
+	box-shadow: 0px 0px 6px red;
+}
+.valid{
+	box-shadow: 0px 0px 6px seagreen;
+}
+body{
+	background-color:rgba(192,192,192,0.1);
+	background-image: url(./quandosairfundo2.png);
+	background-size:cover;
+	background-repeat: no-repeat;
+}
+.menu{
+	z-index: 100;
+	outline: 1px solid lightgray;
+	box-shadow: 0px 0px 0.5px grey inset;
+	margin-top: -12px;
+	background-color: white;
+	width: 145px;
+	left: 52%;
+	position: absolute;
+}
+.menu li{
+	list-style-type: none;
+	padding: 2px 17px 0px 4px;
+	text-align: center;
+	cursor: pointer;
+	color:#666;
+}
+.menu li span{
+	background-image: url(http://cdn.mysitemyway.com/etc-mysitemyway/icons/legacy-previews/icons/3d-transparent-glass-icons-alphanumeric/068116-3d-transparent-glass-icon-alphanumeric-plus-sign-simple.png);
+	padding: 7px;
+	background-size: contain;
+	margin-right: 10px;
+	float: left;
+}
+.div{
+	padding: 15px 0px;
+	display: block;
+	text-align: center;
+}
+.light-blue-opacity{
+	background-color: rgba(200, 200, 230, 0.0980392);
+}
+.margin-bottom-15px{
+	margin-bottom: 15px;
+}
+.container-horarioSemanal span.subtitulo, .container-calculadoraDiaria span.subtitulo, .container-jira span.subtitulo{
+	width: fit-content;
+	color: lightseagreen;
+	display: block;
+	margin: auto;
+}
+
+/*ANGULAR ANIMATE*/
+.animate-show-hide.ng-hide {
+  opacity: 0;
+}
+
+.animate-show-hide.ng-hide-add,
+.animate-show-hide.ng-hide-remove {
+  transition: all linear 1s;
+}
