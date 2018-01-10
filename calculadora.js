@@ -241,7 +241,7 @@ app.controller('CalculadoraDeHora', function($scope, $http) {
 		var saidaAlmoco = moment(angular.element("#horaDeSaidaAlmoco").val(),"HH:mm");
 		var chegadaAlmoco = moment(angular.element("#horaDeChegadaAlmoco").val(),"HH:mm");
 		var almoco = moment(moment.utc(moment(chegadaAlmoco).diff(moment(saidaAlmoco))).format("HH:mm"),"HH:mm");
-		if(almoco.hours() < 1) almoco = moment('01:00','HH:mm').format('HH:mm');
+		if(almoco.hours() < 1) almoco = moment('01:00','HH:mm');
 		return $scope.adicionaHoras(horasTrabalhar, almoco);
 	}
 	
