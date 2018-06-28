@@ -304,7 +304,11 @@ app.controller('CalculadoraDeHora', function($scope, $http) {
 		var minutosRestante = tempo.substr(index +1);
 		horasRestante = horasRestante + (24*diasDiff);
 		if(horasRestante < 10) horasRestante = "0" + horasRestante;
-		$scope.tempoRestante = horasRestante + ":" + minutosRestante;
+		if(horasTrabalhadas.isAfter(horasTrabalhar)){
+			$scope.tempoRestante = horasRestante + ":" + minutosRestante;
+		}else{
+			$scope.tempoRestante = "00:00";
+		}
 		
 	}
 	
