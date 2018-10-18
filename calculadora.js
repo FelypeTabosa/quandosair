@@ -4,8 +4,8 @@ app.controller('CalculadoraDeHora', function($scope, $http) {
 	$scope.temLanche = false;
 	$scope.qtdDias = 0;
 	$scope.regimeDeHoras = 0;
-	$scope.numRegimeDeTrabalho = [16,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44];
-	$scope.numDiasDaSemana = [1,2,3,4,5,6,7];
+	$scope.numRegimeDeTrabalho = Array.from(Array(45).keys()).slice(1);
+	$scope.numDiasDaSemana = Array.from(Array(8).keys()).slice(1);
 	$scope.diasDaSemana = ['Segunda-Feira','Terça-Feira','Quarta-Feira','Quinta-Feira','Sexta-Feira','Sábado','Domingo'];
 	$scope.tempoRestante = "";
 	angular.element('.error').hide();
