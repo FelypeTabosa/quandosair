@@ -41,8 +41,9 @@
 	background-blend-mode: luminosity;
 }
 .side-menu span.calculadoraDiaria{
-	background-image: url(https://iconglory.com/wp-content/uploads/edd/2017/05/calculator-1-featured-1000x750.png);
+	background-image: url(http://cdn.onlinewebfonts.com/svg/img_412261.png);
 	background-blend-mode: luminosity;
+	background-size: 70%;
 }
 .side-menu span.jira{
 	background-image: url(https://cdn.iconverticons.com/files/png/a8dda0e01bb0031b_256x256.png);
