@@ -57,14 +57,14 @@ app.controller('CalculadoraDeHora', function($scope, $http) {
 			angular.element($event.target).css("padding", "8px 15px");
 		});
 		angular.element('.container-calculadoraDiaria input').bind('focus',function($event){
-			angular.element($event.target).attr("type","time");
+			angular.element($event.target).attr("type","time").attr('pattern',"[0-9]{2}:[0-9]{2}");
 			angular.element($event.target).css("padding", "5px 0px 5px 30px");
 		});
 	}
 	
 	$scope.trocaTipoDoCampo = function(event){
 		if(angular.element(event.target).attr('type') == 'text'){
-			angular.element(event.target).attr('type','time');
+			angular.element(event.target).attr('type','time').attr('pattern',"[0-9]{2}:[0-9]{2}");
 		}else{
 			angular.element(event.target).attr('type','text');
 		}
